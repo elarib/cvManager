@@ -1,0 +1,39 @@
+<form ng-controller="SignUpController" ng-submit="signup()"  id="register-form"  role="form" style="display: none ;" ng-model="signUpModel">
+    <div>
+        <div class="form-group">
+            <input type="text" name="firstName" id="firstName" tabindex="1" class="form-control" placeholder="First Name" value="FirstName" ng-model="signUpModel.firstName"/>
+        </div>
+        <div class="form-group">
+            <input type="text" name="lastName" id="lastName" tabindex="1" class="form-control" placeholder="Last Name" value="LastrName"  ng-model="signUpModel.lastName"/>
+        </div>
+        <div class="form-group">
+            <input type="text" name="age" id="age" tabindex="1" class="form-control" placeholder="Age" value="23"  ng-model="signUpModel.age"/>
+        </div>
+        <div class="form-group">
+            <input type="text" name="description" id="description" tabindex="1" class="form-control" placeholder="Who are you ? (In 5 words )" value="DEscription"  ng-model="signUpModel.description"/>
+        </div>
+        <div class="form-group">
+            <input type="email" name="email" id="email" tabindex="1" class="form-control" placeholder="Email Address" value="azertye.e"  ng-model="signUpModel.email"/>
+        </div>
+        <div class="form-group">
+            <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password" value="azerty123"  ng-model="signUpModel.password.main"/>
+        </div>
+        <div class="form-group">
+            <input type="password" name="confirm-password" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password" value="azerty123"  ng-model="signUpModel.password.confirm"/>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-sm-6 col-sm-offset-3">
+                    <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Register Now"/>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-sm-6 col-sm-offset-3">
+                    <p class="bg-danger">{{error}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

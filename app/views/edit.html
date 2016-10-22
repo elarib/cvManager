@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title>Edit </title>
+<link rel="stylesheet" type="text/css"
+  href="../static/css/bootstrap.min.css"
+  th:href="@{/css/bootstrap.min.css}" />
+<link rel="stylesheet" type="text/css" href="../static/css/styles.css"
+  th:href="@{/css/styles.css}" />
+</head>
+<body>
+<div class="container">
+	<form class="form-horizontal" th:action="@{/edit/}+${component}" method="POST">
+		<fieldset>
+		<legend class="text-capitalize">Edit <span th:text="${component}"></span> :</legend>
+		
+		<!-- Objectif Form -->
+		<div class="form-group" th:if="${component == 'objectif'}" th:object="${objToSave}">
+		  <label class="col-md-4 control-label" for="textarea">Objectif</label>
+		  <div class="col-md-4">     
+		 	<input  type="hidden" id="ID" th:name="ID" th:value="*{ID}"/> 
+		 	<input type="hidden" id="name" th:name="name" th:value="*{name}"/>                               
+		    <textarea class="form-control" id="content" th:name="content" th:value="*{content}" th:text="${objToSave.content}" ></textarea>
+		  </div>
+		</div>
+		
+		
+		
+		<!--Infos Form -->
+		<div th:if="${component == 'infos'}" th:object="${objToSave}">
+			<input  type="hidden" id="ID" th:name="ID" th:value="*{ID}"/>
+			<input  type="hidden" id="password" th:name="password" th:value="*{password}"/>
+			<input  type="hidden" id="email" th:name="email" th:value="*{email}"/>
+			
+			<div class="form-group">
+			  <label class="col-md-4 control-label" for="firstName">First Name</label>  
+			  <div class="col-md-4">
+			  <input id="firstName" name="firstName" type="text" placeholder="" class="form-control input-md" th:value="*{firstName}"/>
+			  </div>
+			</div>	
+			
+			<div class="form-group">
+			  <label class="col-md-4 control-label" for="lastName">Last Name</label>  
+			  <div class="col-md-4">
+			  <input id="lastName" name="lastName" type="text" placeholder="" class="form-control input-md" th:value="*{lastName}"/>
+			  </div>
+			</div>
+
+			<div class="form-group">
+			  <label class="col-md-4 control-label" for="description">Description</label>  
+			  <div class="col-md-4">
+			  <input id="description" name="description" type="text" placeholder="" class="form-control input-md" th:value="*{description}"/>
+			    
+			  </div>
+			</div>
+				
+			<div class="form-group">
+			  <label class="col-md-4 control-label" for="age">Age</label>  
+			  <div class="col-md-4">
+			  <input id="age" name="age" type="number" placeholder="" class="form-control input-md" th:value="*{age}"/>
+			  </div>
+			</div>
+
+			<div class="form-group">
+			  <label class="col-md-4 control-label" for="photo">Photo</label>
+			  <div class="col-md-4">
+			    <input id="photo" name="photo" class="input-file" type="file" th:value="*{photo}"/>
+			  </div>
+			</div>
+		</div>
+		
+		
+		
+		<!--Infos Form -->
+		<div th:if="${component == 'userInfos'}" th:object="${objToSave}">
+			<input  type="hidden" id="ID" th:name="ID" th:value="*{ID}"/>
+			<input  type="hidden" id="user" th:name="user" th:value="*{user}"/>
+
+			<div>
+				<div class="form-group">
+				  <label class="col-md-4 control-label" for="type">Type</label>  
+				  <div class="col-md-4">
+				  <input id="type" name="type" type="text" placeholder="" class="form-control input-md" th:value="*{type}"/>
+				  </div>
+				</div>
+				
+				<div class="form-group">
+				  <label class="col-md-4 control-label" for="content">Content</label>  
+				  <div class="col-md-4">
+				  <input id="content" name="content" type="text" placeholder="" class="form-control input-md" th:value="*{content}"/>
+				  </div>
+				</div>	
+			
+			</div>
+			
+			
+		</div>
+		
+		
+		<!-- Save Button -->
+		<div class="form-group">
+		  <label class="col-md-4 control-label" for="save"></label>
+		  <div class="col-md-4">
+		    <button type="submit" class="btn btn-primary">Save</button>
+		  </div>
+		</div>
+		
+		</fieldset>
+	</form>
+
+
+
+
+</div>
+
+
+
+
+<script th:src="@{/js/jquery-2.1.4.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/script.js}"></script>
+
+</body>
+</html>
