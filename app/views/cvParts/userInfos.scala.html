@@ -1,0 +1,63 @@
+<div class="container">
+    <div class="row" th:with="component='infos'" ng-controller="userInfoController">
+        <div class="col-xs-2">
+            <img class="img-thumbnail" src="@routes.Assets.versioned("images/avatar.jpg")" />
+        </div>
+            <!-- 		 FullName & Description  -->
+        <div class="col-xs-6 text-center" >
+
+            <div ng-hide="editorEnabled">
+                <a class="h2 center-block"><span>{{fullName}}</span></a> <a
+            class="h4 center-block">{{description}}</a> <a href="#"
+            ng-click="enableEditor()">
+            </a>
+            </div>
+            <div ng-show="editorEnabled">
+                <input
+                ng-model="editablefirstName" ng-show="editorEnabled" /> <input
+            ng-model="editablelastName" ng-show="editorEnabled" /> <input
+            ng-model="editableDescription" ng-show="editorEnabled" />
+
+            </div>
+
+        </div>
+            <!-- 			User Infos ! -->
+        <div class="col-xs-4" >
+            <div class="col-xs-12">
+                <div>
+                    <div ng-hide="editorEnabled">
+
+                        <div ng-repeat="info in infos | orderBy:'order' ">
+
+                            <p>
+                                <span ng-show="info.content" class="{{info.icon}}">{{info.content}}</span>
+                            </p>
+
+                        </div>
+                        <a href="#" ng-click="enableEditor()"><span
+                        class="glyphicon glyphicon-pencil edit">Edit</span>
+                        </a>
+                    </div>
+                    <div ng-show="editorEnabled">
+
+                        <div ng-repeat="info in infos | orderBy:'order' "
+                        ng-show="editorEnabled">
+                            <span class="{{info.icon}}"> <input
+                            ng-model="info.content" />
+                            </span>
+                        </div>
+                        <a href="#" ng-click="save()"><span
+                        class="glyphicon glyphicon-floppy-saved save">Save</span>
+                        </a> or <a
+                    href="#" ng-click="disableEditor()"><span
+                    class="glyphicon glyphicon-floppy-remove cancel">Cancel</span>
+                    </a>.
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

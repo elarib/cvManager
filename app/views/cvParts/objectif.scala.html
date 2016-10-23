@@ -1,0 +1,31 @@
+<div class="page-header"></div>
+<div class="container" ng-controller="objectifController">
+    <div class="row">
+        <div class="col-xs-2">
+            <h4>Objectif</h4>
+        </div>
+        <div class="col-xs-10">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div ng-hide="editorEnabled">
+                        <a ng-click="enableEditor()"><span
+                        class="glyphicon glyphicon-pencil edit">Edit</span>
+                        </a> {{objectif}}
+                    </div>
+                    <div ng-show="editorEnabled">
+                        <p><textarea rows="4" cols="50" ng-show="editorEnabled" ng-init="objectif" ng-model="objectif" ></textarea>
+                        </p>
+                        <a href="#" ng-click="save()"><span
+                        class="glyphicon glyphicon-floppy-saved save">Save</span>
+                        </a> or <a
+                    href="#" ng-click="disableEditor()"><span
+                    class="glyphicon glyphicon-floppy-remove cancel">Cancel</span>
+                    </a>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

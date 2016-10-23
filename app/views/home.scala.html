@@ -1,92 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8" />
-<title>CV</title>
+    <head>
+        <meta charset="UTF-8" />
+        <title>CV</title>
 
-	<link rel="stylesheet" type="text/css"
-	href="@routes.Assets.versioned("css/bootstrap.min.css")"/>
+        <link rel="stylesheet" type="text/css"
+        href="@routes.Assets.versioned("css/bootstrap.min.css")"/>
 
-	<link rel="stylesheet" type="text/css"
-	href="@routes.Assets.versioned("css/style.css")"/>
+        <link rel="stylesheet" type="text/css"
+        href="@routes.Assets.versioned("css/style.css")"/>
 
-	<link rel="stylesheet" type="text/css"
-	href="@routes.Assets.versioned("css/font-awesome.css")"/>
+        <link rel="stylesheet" type="text/css"
+        href="@routes.Assets.versioned("css/font-awesome.css")"/>
 
-</head>
-<body ng-app="cvApp">
+    </head>
+    <body ng-app="cvApp" >
 
-
-	<!-- CV -->
-	<div class="page-header"></div>
-	<div class="container">
-		<div class="row" th:with="component='infos'">
-			<div class="col-xs-2">
-				<img class="img-thumbnail" src="@routes.Assets.versioned("images/avatar.jpg")" />
-			</div>
-			<!-- 		 FullName & Description  -->
-			<div class="col-xs-6 text-center" ng-controller="userController">
-
-
-				<div ng-hide="editorEnabled">
-					<a class="h2 center-block"><span>{{fullName}}</span></a> <a
-						class="h4 center-block">{{description}}</a> <a href="#"
-						ng-click="enableEditor()"><span
-						class="glyphicon glyphicon-pencil edit">Edit</span></a>
-				</div>
-				<div ng-show="editorEnabled">
-					<a href="#" ng-click="save()"><span
-						class="glyphicon glyphicon-floppy-saved save">Save</span></a> or <a
-						href="#" ng-click="disableEditor()"><span
-						class="glyphicon glyphicon-floppy-remove cancel">Cancel</span></a> <input
-						ng-model="editablefirstName" ng-show="editorEnabled" /> <input
-						ng-model="editablelastName" ng-show="editorEnabled" /> <input
-						ng-model="editableDescription" ng-show="editorEnabled" />
-
-				</div>
-
-			</div>
-			<!-- 			User Infos ! -->
-			<div class="col-xs-4" ng-controller="userInfosController">
-				<div class="col-xs-12">
-					<div>
-						<div ng-hide="editorEnabled">
-
-							<div ng-repeat="info in infos | orderBy:'order' ">
-
-								<p>
-									<span ng-show="info.content" class="{{info.icon}}">{{info.content}}</span>
-								</p>
-
-							</div>
-							<a href="#" ng-click="enableEditor()"><span
-								class="glyphicon glyphicon-pencil edit">Edit</span></a>
-						</div>
-						<div ng-show="editorEnabled">
-
-							<div ng-repeat="info in infos | orderBy:'order' "
-								ng-show="editorEnabled">
-								<span class="{{info.icon}}"> <input
-									ng-model="info.content" />
-								</span>
-							</div>
-							<a href="#" ng-click="save()"><span
-								class="glyphicon glyphicon-floppy-saved save">Save</span></a> or <a
-								href="#" ng-click="disableEditor()"><span
-								class="glyphicon glyphicon-floppy-remove cancel">Cancel</span></a>.
-
-
-						</div>
-
-
-
-					</div>
-				</div>
-
-
-			</div>
-		</div>
-	</div>
+            <!-- CV -->
+        <div class="page-header"></div>
+        @cvParts.userInfos()
 
 
 
@@ -94,180 +26,37 @@
 
 
 
-	<!-- Objectif -->
-	<div class="page-header"></div>
-	<div class="container" th:with="component='objectif'"
-		ng-controller="objectifController">
-		<div class="row">
-			<div class="col-xs-2">
-				<h4>Objectif</h4>
-			</div>
-			<div class="col-xs-10">
-				<div class="row">
-					<div class="col-xs-12">
-						<p>
-							@*<!-- 							<a th:href="@{/edit(c=${component})}"><span -->*@
-							@*<!-- 								class="glyphicon glyphicon-pencil edit">edit&nbsp;</span></a> <span -->*@
-							@*<!-- 								th:text="${objectifUser.content}"></span> -->*@
-						<div ng-hide="editorEnabled">
-							<a href="#" ng-click="enableEditor()"><span
-								class="glyphicon glyphicon-pencil edit">Edit</span></a> {{title}}
-						</div>
-						<div ng-show="editorEnabled">
-							<p><textarea rows="4" cols="50" ng-model="editableTitle" ng-show="editorEnabled" ></textarea>
-								</p>
-							<a href="#" ng-click="save()"><span
-								class="glyphicon glyphicon-floppy-saved save">Save</span></a> or <a
-								href="#" ng-click="disableEditor()"><span
-								class="glyphicon glyphicon-floppy-remove cancel">Cancel</span></a>
-								
+            <!-- Objectif -->
+        @cvParts.objectif()
 
-						</div>
-						</p>
+            <!-- Competences -->
+        @cvParts.competences()
 
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-- Skills -->
-	<div class="page-header"></div>
-	<div class="container" th:with="component='skills'">
-		<div class="row">
-			<div class="col-xs-2">
-				<h4>Skills</h4>
-			</div>
-			<div class="col-xs-10">
-				<div class="row">
-					<div class="col-xs-5">
-						<p class="h5">Programming</p>
-						<p class="small">
-							<strong>JAVA</strong> - 3 years experience
-						</p>
-						<p class="small">
-							<strong>Spring</strong> - 3 years experience
-						</p>
-						<p class="small">
-							<strong>php</strong> - 3 years experience
-						</p>
-						<p class="small">
-							<strong>CSS</strong> - 3 years experience
-						</p>
-					</div>
-					<div class="col-xs-5">
-						<p class="h5">Langue</p>
-						<p class="small">
-							<strong>Arabic</strong> - 3 years experience
-						</p>
-						<p class="small">
-							<strong>English</strong> - 3 years experience
-						</p>
-						<p class="small">
-							<strong>French</strong> - 3 years experience
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-- Education -->
-	<div class="page-header"></div>
-	<div class="container" th:with="component='education'">
-		<div class="row">
-			<div class="col-xs-2">
-				<h4>Education</h4>
-			</div>
-			<div class="col-xs-10">
-				<div class="row">
-					<div class="col-xs-12">
-						<p class="h5">High School</p>
-						<p class="small">2007-2009</p>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-							Aliquam pellentesque sodales nunc. Cras nec tellus dictum,
-							sodales justo vitae, luctus dui. Ut eget nibh tellus. Maecenas id
-							rutrum velit. Morbi tempor dictum ipsum, id ornare neque
-							efficitur molestie. Nunc sodales posuere sem. Proin rhoncus
-							mauris eu sapien auctor pellentesque. Cum sociis natoque
-							penatibus et magnis dis parturient montes, nascetur ridiculus
-							mus.</p>
-					</div>
-					<div class="col-xs-12">
-						<p class="h5">High School</p>
-						<p class="small">2007-2009</p>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-							Aliquam pellentesque sodales nunc. Cras nec tellus dictum,
-							sodales justo vitae, luctus dui. Ut eget nibh tellus. Maecenas id
-							rutrum velit. Morbi tempor dictum ipsum, id ornare neque
-							efficitur molestie. Nunc sodales posuere sem. Proin rhoncus
-							mauris eu sapien auctor pellentesque. Cum sociis natoque
-							penatibus et magnis dis parturient montes, nascetur ridiculus
-							mus.</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+            <!-- Education -->
+        @cvParts.education()
 
 
-	<!-- Work Experience -->
-	<div class="page-header"></div>
-	<div class="container" th:with="component='work'">
-		<div class="row">
-			<div class="col-xs-2">
-				<h4>Work Experience</h4>
-			</div>
-			<div class="col-xs-10">
-				<div class="row">
-					<div class="col-xs-12">
-						<p class="h5">High School</p>
-						<p class="small">2007-2009</p>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-							Aliquam pellentesque sodales nunc. Cras nec tellus dictum,
-							sodales justo vitae, luctus dui. Ut eget nibh tellus. Maecenas id
-							rutrum velit. Morbi tempor dictum ipsum, id ornare neque
-							efficitur molestie. Nunc sodales posuere sem. Proin rhoncus
-							mauris eu sapien auctor pellentesque. Cum sociis natoque
-							penatibus et magnis dis parturient montes, nascetur ridiculus
-							mus.</p>
-					</div>
-					<div class="col-xs-12">
-						<p class="h5">High School</p>
-						<p class="small">2007-2009</p>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-							Aliquam pellentesque sodales nunc. Cras nec tellus dictum,
-							sodales justo vitae, luctus dui. Ut eget nibh tellus. Maecenas id
-							rutrum velit. Morbi tempor dictum ipsum, id ornare neque
-							efficitur molestie. Nunc sodales posuere sem. Proin rhoncus
-							mauris eu sapien auctor pellentesque. Cum sociis natoque
-							penatibus et magnis dis parturient montes, nascetur ridiculus
-							mus.</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+            <!-- Work Experience -->
+        @cvParts.workExperience()
 
 
 
-
-	<script src="@routes.Assets.versioned("js/script.js")"></script>
-
-
-	<script src="@routes.Assets.versioned("js/jquery-2.1.4.min.js")"></script>
-	<script src="@routes.Assets.versioned("js/bootstrap.min.js")"></script>
-	<script src="@routes.Assets.versioned("js/angular.min.js")"></script>
-	<script src="@routes.Assets.versioned("js/angular-ui.js")"></script>
-	<script src="@routes.Assets.versioned("js/angular-resource.js")"></script>
+        <script src="@routes.Assets.versioned("js/jquery-2.1.4.min.js")"></script>
+        <script src="@routes.Assets.versioned("js/script.js")"></script>
 
 
-	<script src="@routes.Assets.versioned("js/script-ng.js")"></script>
 
-	<script src="@routes.Assets.versioned("js/services/userService.js")"></script>
-	<script src="@routes.Assets.versioned("js/services/userDetailService.js")"></script>
-	<script src="@routes.Assets.versioned("js/services/objectifService.js")"></script>
+        <script src="@routes.Assets.versioned("js/bootstrap.min.js")"></script>
+        <script src="@routes.Assets.versioned("js/angular.min.js")"></script>
+        <script src="@routes.Assets.versioned("js/angular-ui.js")"></script>
+        <script src="@routes.Assets.versioned("js/angular-resource.js")"></script>
 
 
-</body>
+        <script src="@routes.Assets.versioned("js/script-ng.js")"></script>
+
+        <script src="@routes.Assets.versioned("js/services/userService.js")"></script>
+        <script src="@routes.Assets.versioned("js/services/userDetailService.js")"></script>
+        <script src="@routes.Assets.versioned("js/services/objectifService.js")"></script>
+
+    </body>
 </html>

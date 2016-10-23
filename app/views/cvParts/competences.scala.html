@@ -1,0 +1,23 @@
+<div class="page-header"></div>
+<div class="container" th:with="component='skills'">
+    <div class="row">
+        <div class="col-xs-2">
+            <h4>Competences</h4>
+        </div>
+        <div class="col-xs-10">
+            <div class="row">
+                <div class="col-xs-5" ng-repeat="competence in competences">
+                    <div ng-repeat="(competenceName, elts) in competence">
+                        <p class="h5">{{competenceName}}</p>
+                        <p class="small" ng-repeat="elt in elts">
+                            <strong>{{elt.name}}</strong> - {{elt.detail}}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

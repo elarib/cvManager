@@ -37,8 +37,8 @@ object Component extends DefaultJsonProtocol {
       userObjectif <- objectifs.filter(_.userId === userId).result.headOption
       userWorkExperences <- workexperiences.filter(_.userId === userId).result
       userEducations <- educations.filter(_.userId === userId).result
-      userCompetences <- competences.filter(_.userId === userId).result
-      //      userCompetencesElt <- competenceElts.filter(_.competenceId === )
+      userCompetences <- (competences.filter(_.userId === userId) join competenceElts on (_.id === _.competenceId))
+        .map(cpt => (cpt._1.name, cpt._2.name, cpt._2.detail)).result
     } yield (userObjectif, userWorkExperences, userEducations, userCompetences)
 
     db.run(query.asTry)

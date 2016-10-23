@@ -1,0 +1,18 @@
+<div class="page-header"></div>
+<div class="container" th:with="component='work'">
+    <div class="row">
+        <div class="col-xs-2">
+            <h4>Work Experience</h4>
+        </div>
+        <div class="col-xs-10">
+            <div class="row">
+
+                <div class="col-xs-12" ng-repeat="experience in experiences">
+                    <p class="h5">{{experience.place}}</p>
+                    <p class="small">{{experience.yearFrom}} - {{experience.yearTo}}</p>
+                    <p>{{experience.description}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

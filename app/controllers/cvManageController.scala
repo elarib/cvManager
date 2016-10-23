@@ -39,24 +39,26 @@ class cvManageController @Inject() (
       models.Component.findByUserId(request.user.id).map(_ match {
         case Success(result) =>
 
+          val user = Map(
+            "id" -> (request.user.id).toJson,
+            "firstName" -> (request.user.firstName).toJson,
+            "lastName" -> (request.user.lastName).toJson,
+            "email" -> (request.user.email).toJson,
+            "description" -> (request.user.description).toJson,
+            "age" -> (request.user.age).toJson
+          )
+
           val objectif = result._1.toJson
           val workexperiences = result._2.toJson
           val educations = result._3.toJson
-          val competences = result._4.toJson
-          //          val competenceElts = list._5
+          val competences = result._4.map(_._1).toSet.map((e: Option[String]) => Map(e.getOrElse("") -> result._4.filter(_._1 == e).map(elt => Map("name" -> elt._2, "detail" -> elt._3))))
 
-          //          Ok(Json.obj(
-          //            "user" -> request.user,
-          //            //            "objectif" -> objectif.getOrElse(ObjectifRow(0, Some(""), request.user.id)).toJson.compactPrint
-          //            "objectif" -> objectif.get.toJson
-          //          ))
-          //          objectif.get.toJson.prettyPrint
-          println(educations)
           val list = Map(
+            "user" -> user.toJson,
             "objectif" -> objectif,
             "educations" -> educations,
             "workexperiences" -> workexperiences,
-            "competences" -> competences
+            "competences" -> competences.toJson
 
           ).toJson
 
