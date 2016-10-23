@@ -14,123 +14,107 @@ trait Tables {
   import slick.jdbc.{ GetResult => GR }
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema: profile.SchemaDescription = Array(Competence.schema, CompetencesSkills.schema, Component.schema, Education.schema, ElementCompetence.schema, Objectif.schema, Role.schema, Skill.schema, User.schema, UserInfo.schema, WorkExperience.schema).reduceLeft(_ ++ _)
+  lazy val schema: profile.SchemaDescription = Array(Competence.schema, CompetenceElt.schema, Education.schema, Objectif.schema, Role.schema, User.schema, UserInfo.schema, WorkExperience.schema).reduceLeft(_ ++ _)
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
 
   /**
    * Entity class storing rows of table Competence
-   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   *  @param id Database column id SqlType(BIGINT), AutoInc
    *  @param name Database column name SqlType(VARCHAR), Length(255,true), Default(None)
+   *  @param userId Database column user_id SqlType(BIGINT)
    */
-  case class CompetenceRow(id: Long, name: Option[String] = None)
+  case class CompetenceRow(id: Long, name: Option[String] = None, userId: Long)
   /** GetResult implicit for fetching CompetenceRow objects using plain SQL queries */
   implicit def GetResultCompetenceRow(implicit e0: GR[Long], e1: GR[Option[String]]): GR[CompetenceRow] = GR {
     prs =>
       import prs._
-      CompetenceRow.tupled((<<[Long], <<?[String]))
+      CompetenceRow.tupled((<<[Long], <<?[String], <<[Long]))
   }
   /** Table description of table competence. Objects of this class serve as prototypes for rows in queries. */
   class Competence(_tableTag: Tag) extends Table[CompetenceRow](_tableTag, "competence") {
-    def * = (id, name) <> (CompetenceRow.tupled, CompetenceRow.unapply)
+    def * = (id, name, userId) <> (CompetenceRow.tupled, CompetenceRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), name).shaped.<>({ r => import r._; _1.map(_ => CompetenceRow.tupled((_1.get, _2))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), name, Rep.Some(userId)).shaped.<>({ r => import r._; _1.map(_ => CompetenceRow.tupled((_1.get, _2, _3.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
-    /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
-    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
+    /** Database column id SqlType(BIGINT), AutoInc */
+    val id: Rep[Long] = column[Long]("id", O.AutoInc)
     /** Database column name SqlType(VARCHAR), Length(255,true), Default(None) */
     val name: Rep[Option[String]] = column[Option[String]]("name", O.Length(255, varying = true), O.Default(None))
+    /** Database column user_id SqlType(BIGINT) */
+    val userId: Rep[Long] = column[Long]("user_id")
+
+    /** Primary key of Competence (database name competence_PK) */
+    val pk = primaryKey("competence_PK", (id, userId))
+
+    /** Foreign key referencing User (database name fk_competence_user1) */
+    lazy val userFk = foreignKey("fk_competence_user1", userId, User)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
   }
   /** Collection-like TableQuery object for table Competence */
   lazy val Competence = new TableQuery(tag => new Competence(tag))
 
   /**
-   * Entity class storing rows of table CompetencesSkills
-   *  @param idCompetence Database column id_competence SqlType(BIGINT)
-   *  @param idSkill Database column id_skill SqlType(BIGINT)
-   */
-  case class CompetencesSkillsRow(idCompetence: Long, idSkill: Long)
-  /** GetResult implicit for fetching CompetencesSkillsRow objects using plain SQL queries */
-  implicit def GetResultCompetencesSkillsRow(implicit e0: GR[Long]): GR[CompetencesSkillsRow] = GR {
-    prs =>
-      import prs._
-      CompetencesSkillsRow.tupled((<<[Long], <<[Long]))
-  }
-  /** Table description of table competences_skills. Objects of this class serve as prototypes for rows in queries. */
-  class CompetencesSkills(_tableTag: Tag) extends Table[CompetencesSkillsRow](_tableTag, "competences_skills") {
-    def * = (idCompetence, idSkill) <> (CompetencesSkillsRow.tupled, CompetencesSkillsRow.unapply)
-    /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(idCompetence), Rep.Some(idSkill)).shaped.<>({ r => import r._; _1.map(_ => CompetencesSkillsRow.tupled((_1.get, _2.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
-
-    /** Database column id_competence SqlType(BIGINT) */
-    val idCompetence: Rep[Long] = column[Long]("id_competence")
-    /** Database column id_skill SqlType(BIGINT) */
-    val idSkill: Rep[Long] = column[Long]("id_skill")
-
-    /** Primary key of CompetencesSkills (database name competences_skills_PK) */
-    val pk = primaryKey("competences_skills_PK", (idCompetence, idSkill))
-
-    /** Foreign key referencing Competence (database name FK_oyxc3ffos2g4wjrbkwmopsy1) */
-    lazy val competenceFk = foreignKey("FK_oyxc3ffos2g4wjrbkwmopsy1", idCompetence, Competence)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
-    /** Foreign key referencing Skill (database name FK_sjdl96dsb86nonmt5k18n430s) */
-    lazy val skillFk = foreignKey("FK_sjdl96dsb86nonmt5k18n430s", idSkill, Skill)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
-  }
-  /** Collection-like TableQuery object for table CompetencesSkills */
-  lazy val CompetencesSkills = new TableQuery(tag => new CompetencesSkills(tag))
-
-  /**
-   * Entity class storing rows of table Component
-   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table CompetenceElt
+   *  @param id Database column id SqlType(BIGINT), AutoInc
+   *  @param detail Database column detail SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param name Database column name SqlType(VARCHAR), Length(255,true), Default(None)
-   *  @param idUser Database column id_user SqlType(BIGINT), Default(None)
+   *  @param competenceId Database column competence_id SqlType(BIGINT)
    */
-  case class ComponentRow(id: Long, name: Option[String] = None, idUser: Option[Long] = None)
-  /** GetResult implicit for fetching ComponentRow objects using plain SQL queries */
-  implicit def GetResultComponentRow(implicit e0: GR[Long], e1: GR[Option[String]], e2: GR[Option[Long]]): GR[ComponentRow] = GR {
+  case class CompetenceEltRow(id: Long, detail: Option[String] = None, name: Option[String] = None, competenceId: Long)
+  /** GetResult implicit for fetching CompetenceEltRow objects using plain SQL queries */
+  implicit def GetResultCompetenceEltRow(implicit e0: GR[Long], e1: GR[Option[String]]): GR[CompetenceEltRow] = GR {
     prs =>
       import prs._
-      ComponentRow.tupled((<<[Long], <<?[String], <<?[Long]))
+      CompetenceEltRow.tupled((<<[Long], <<?[String], <<?[String], <<[Long]))
   }
-  /** Table description of table component. Objects of this class serve as prototypes for rows in queries. */
-  class Component(_tableTag: Tag) extends Table[ComponentRow](_tableTag, "component") {
-    def * = (id, name, idUser) <> (ComponentRow.tupled, ComponentRow.unapply)
+  /** Table description of table competence_elt. Objects of this class serve as prototypes for rows in queries. */
+  class CompetenceElt(_tableTag: Tag) extends Table[CompetenceEltRow](_tableTag, "competence_elt") {
+    def * = (id, detail, name, competenceId) <> (CompetenceEltRow.tupled, CompetenceEltRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), name, idUser).shaped.<>({ r => import r._; _1.map(_ => ComponentRow.tupled((_1.get, _2, _3))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), detail, name, Rep.Some(competenceId)).shaped.<>({ r => import r._; _1.map(_ => CompetenceEltRow.tupled((_1.get, _2, _3, _4.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
-    /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
-    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
+    /** Database column id SqlType(BIGINT), AutoInc */
+    val id: Rep[Long] = column[Long]("id", O.AutoInc)
+    /** Database column detail SqlType(VARCHAR), Length(255,true), Default(None) */
+    val detail: Rep[Option[String]] = column[Option[String]]("detail", O.Length(255, varying = true), O.Default(None))
     /** Database column name SqlType(VARCHAR), Length(255,true), Default(None) */
     val name: Rep[Option[String]] = column[Option[String]]("name", O.Length(255, varying = true), O.Default(None))
-    /** Database column id_user SqlType(BIGINT), Default(None) */
-    val idUser: Rep[Option[Long]] = column[Option[Long]]("id_user", O.Default(None))
+    /** Database column competence_id SqlType(BIGINT) */
+    val competenceId: Rep[Long] = column[Long]("competence_id")
 
-    /** Foreign key referencing User (database name FK_iag430km1hfnaw2ys80mnwc4h) */
-    lazy val userFk = foreignKey("FK_iag430km1hfnaw2ys80mnwc4h", idUser, User)(r => Rep.Some(r.id), onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
+    /** Primary key of CompetenceElt (database name competence_elt_PK) */
+    val pk = primaryKey("competence_elt_PK", (id, competenceId))
+
+    /** Foreign key referencing Competence (database name fk_element_competence_competence1) */
+    lazy val competenceFk = foreignKey("fk_element_competence_competence1", competenceId, Competence)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
   }
-  /** Collection-like TableQuery object for table Component */
-  lazy val Component = new TableQuery(tag => new Component(tag))
+  /** Collection-like TableQuery object for table CompetenceElt */
+  lazy val CompetenceElt = new TableQuery(tag => new CompetenceElt(tag))
 
   /**
    * Entity class storing rows of table Education
+   *  @param id Database column id SqlType(BIGINT), AutoInc
    *  @param description Database column description SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param place Database column place SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param yearFrom Database column year_from SqlType(INT)
    *  @param yearTo Database column year_to SqlType(INT)
-   *  @param id Database column id SqlType(BIGINT), PrimaryKey
+   *  @param userId Database column user_id SqlType(BIGINT)
    */
-  case class EducationRow(description: Option[String] = None, place: Option[String] = None, yearFrom: Int, yearTo: Int, id: Long)
+  case class EducationRow(id: Long, description: Option[String] = None, place: Option[String] = None, yearFrom: Int, yearTo: Int, userId: Long)
   /** GetResult implicit for fetching EducationRow objects using plain SQL queries */
-  implicit def GetResultEducationRow(implicit e0: GR[Option[String]], e1: GR[Int], e2: GR[Long]): GR[EducationRow] = GR {
+  implicit def GetResultEducationRow(implicit e0: GR[Long], e1: GR[Option[String]], e2: GR[Int]): GR[EducationRow] = GR {
     prs =>
       import prs._
-      EducationRow.tupled((<<?[String], <<?[String], <<[Int], <<[Int], <<[Long]))
+      EducationRow.tupled((<<[Long], <<?[String], <<?[String], <<[Int], <<[Int], <<[Long]))
   }
   /** Table description of table education. Objects of this class serve as prototypes for rows in queries. */
   class Education(_tableTag: Tag) extends Table[EducationRow](_tableTag, "education") {
-    def * = (description, place, yearFrom, yearTo, id) <> (EducationRow.tupled, EducationRow.unapply)
+    def * = (id, description, place, yearFrom, yearTo, userId) <> (EducationRow.tupled, EducationRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (description, place, Rep.Some(yearFrom), Rep.Some(yearTo), Rep.Some(id)).shaped.<>({ r => import r._; _3.map(_ => EducationRow.tupled((_1, _2, _3.get, _4.get, _5.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), description, place, Rep.Some(yearFrom), Rep.Some(yearTo), Rep.Some(userId)).shaped.<>({ r => import r._; _1.map(_ => EducationRow.tupled((_1.get, _2, _3, _4.get, _5.get, _6.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
+    /** Database column id SqlType(BIGINT), AutoInc */
+    val id: Rep[Long] = column[Long]("id", O.AutoInc)
     /** Database column description SqlType(VARCHAR), Length(255,true), Default(None) */
     val description: Rep[Option[String]] = column[Option[String]]("description", O.Length(255, varying = true), O.Default(None))
     /** Database column place SqlType(VARCHAR), Length(255,true), Default(None) */
@@ -139,75 +123,49 @@ trait Tables {
     val yearFrom: Rep[Int] = column[Int]("year_from")
     /** Database column year_to SqlType(INT) */
     val yearTo: Rep[Int] = column[Int]("year_to")
-    /** Database column id SqlType(BIGINT), PrimaryKey */
-    val id: Rep[Long] = column[Long]("id", O.PrimaryKey)
+    /** Database column user_id SqlType(BIGINT) */
+    val userId: Rep[Long] = column[Long]("user_id")
 
-    /** Foreign key referencing Component (database name FK_510u3nm1ji2p2c6hormkfcsh6) */
-    lazy val componentFk = foreignKey("FK_510u3nm1ji2p2c6hormkfcsh6", id, Component)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
+    /** Primary key of Education (database name education_PK) */
+    val pk = primaryKey("education_PK", (id, userId))
+
+    /** Foreign key referencing User (database name fk_education_user1) */
+    lazy val userFk = foreignKey("fk_education_user1", userId, User)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
   }
   /** Collection-like TableQuery object for table Education */
   lazy val Education = new TableQuery(tag => new Education(tag))
 
   /**
-   * Entity class storing rows of table ElementCompetence
-   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
-   *  @param detail Database column detail SqlType(VARCHAR), Length(255,true), Default(None)
-   *  @param name Database column name SqlType(VARCHAR), Length(255,true), Default(None)
-   *  @param idCompentence Database column id_compentence SqlType(BIGINT), Default(None)
-   */
-  case class ElementCompetenceRow(id: Long, detail: Option[String] = None, name: Option[String] = None, idCompentence: Option[Long] = None)
-  /** GetResult implicit for fetching ElementCompetenceRow objects using plain SQL queries */
-  implicit def GetResultElementCompetenceRow(implicit e0: GR[Long], e1: GR[Option[String]], e2: GR[Option[Long]]): GR[ElementCompetenceRow] = GR {
-    prs =>
-      import prs._
-      ElementCompetenceRow.tupled((<<[Long], <<?[String], <<?[String], <<?[Long]))
-  }
-  /** Table description of table element_competence. Objects of this class serve as prototypes for rows in queries. */
-  class ElementCompetence(_tableTag: Tag) extends Table[ElementCompetenceRow](_tableTag, "element_competence") {
-    def * = (id, detail, name, idCompentence) <> (ElementCompetenceRow.tupled, ElementCompetenceRow.unapply)
-    /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), detail, name, idCompentence).shaped.<>({ r => import r._; _1.map(_ => ElementCompetenceRow.tupled((_1.get, _2, _3, _4))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
-
-    /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
-    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
-    /** Database column detail SqlType(VARCHAR), Length(255,true), Default(None) */
-    val detail: Rep[Option[String]] = column[Option[String]]("detail", O.Length(255, varying = true), O.Default(None))
-    /** Database column name SqlType(VARCHAR), Length(255,true), Default(None) */
-    val name: Rep[Option[String]] = column[Option[String]]("name", O.Length(255, varying = true), O.Default(None))
-    /** Database column id_compentence SqlType(BIGINT), Default(None) */
-    val idCompentence: Rep[Option[Long]] = column[Option[Long]]("id_compentence", O.Default(None))
-
-    /** Foreign key referencing Competence (database name FK_60duxf7964i4b2mpo4k7g589k) */
-    lazy val competenceFk = foreignKey("FK_60duxf7964i4b2mpo4k7g589k", idCompentence, Competence)(r => Rep.Some(r.id), onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
-  }
-  /** Collection-like TableQuery object for table ElementCompetence */
-  lazy val ElementCompetence = new TableQuery(tag => new ElementCompetence(tag))
-
-  /**
    * Entity class storing rows of table Objectif
+   *  @param id Database column id SqlType(BIGINT), AutoInc
    *  @param content Database column content SqlType(VARCHAR), Length(255,true), Default(None)
-   *  @param id Database column id SqlType(BIGINT), PrimaryKey
+   *  @param userId Database column user_id SqlType(BIGINT)
    */
-  case class ObjectifRow(content: Option[String] = None, id: Long)
+  case class ObjectifRow(id: Long, content: Option[String] = None, userId: Long)
   /** GetResult implicit for fetching ObjectifRow objects using plain SQL queries */
-  implicit def GetResultObjectifRow(implicit e0: GR[Option[String]], e1: GR[Long]): GR[ObjectifRow] = GR {
+  implicit def GetResultObjectifRow(implicit e0: GR[Long], e1: GR[Option[String]]): GR[ObjectifRow] = GR {
     prs =>
       import prs._
-      ObjectifRow.tupled((<<?[String], <<[Long]))
+      ObjectifRow.tupled((<<[Long], <<?[String], <<[Long]))
   }
   /** Table description of table objectif. Objects of this class serve as prototypes for rows in queries. */
   class Objectif(_tableTag: Tag) extends Table[ObjectifRow](_tableTag, "objectif") {
-    def * = (content, id) <> (ObjectifRow.tupled, ObjectifRow.unapply)
+    def * = (id, content, userId) <> (ObjectifRow.tupled, ObjectifRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (content, Rep.Some(id)).shaped.<>({ r => import r._; _2.map(_ => ObjectifRow.tupled((_1, _2.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), content, Rep.Some(userId)).shaped.<>({ r => import r._; _1.map(_ => ObjectifRow.tupled((_1.get, _2, _3.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
+    /** Database column id SqlType(BIGINT), AutoInc */
+    val id: Rep[Long] = column[Long]("id", O.AutoInc)
     /** Database column content SqlType(VARCHAR), Length(255,true), Default(None) */
     val content: Rep[Option[String]] = column[Option[String]]("content", O.Length(255, varying = true), O.Default(None))
-    /** Database column id SqlType(BIGINT), PrimaryKey */
-    val id: Rep[Long] = column[Long]("id", O.PrimaryKey)
+    /** Database column user_id SqlType(BIGINT) */
+    val userId: Rep[Long] = column[Long]("user_id")
 
-    /** Foreign key referencing Component (database name FK_cbn4ghd6wadenl15uldatx0lx) */
-    lazy val componentFk = foreignKey("FK_cbn4ghd6wadenl15uldatx0lx", id, Component)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
+    /** Primary key of Objectif (database name objectif_PK) */
+    val pk = primaryKey("objectif_PK", (id, userId))
+
+    /** Foreign key referencing User (database name fk_objectif_user1) */
+    lazy val userFk = foreignKey("fk_objectif_user1", userId, User)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
   }
   /** Collection-like TableQuery object for table Objectif */
   lazy val Objectif = new TableQuery(tag => new Objectif(tag))
@@ -243,32 +201,6 @@ trait Tables {
   }
   /** Collection-like TableQuery object for table Role */
   lazy val Role = new TableQuery(tag => new Role(tag))
-
-  /**
-   * Entity class storing rows of table Skill
-   *  @param id Database column id SqlType(BIGINT), PrimaryKey
-   */
-  case class SkillRow(id: Long)
-  /** GetResult implicit for fetching SkillRow objects using plain SQL queries */
-  implicit def GetResultSkillRow(implicit e0: GR[Long]): GR[SkillRow] = GR {
-    prs =>
-      import prs._
-      SkillRow(<<[Long])
-  }
-  /** Table description of table skill. Objects of this class serve as prototypes for rows in queries. */
-  class Skill(_tableTag: Tag) extends Table[SkillRow](_tableTag, "skill") {
-    def * = id <> (SkillRow, SkillRow.unapply)
-    /** Maps whole row to an option. Useful for outer joins. */
-    def ? = Rep.Some(id).shaped.<>(r => r.map(_ => SkillRow(r.get)), (_: Any) => throw new Exception("Inserting into ? projection not supported."))
-
-    /** Database column id SqlType(BIGINT), PrimaryKey */
-    val id: Rep[Long] = column[Long]("id", O.PrimaryKey)
-
-    /** Foreign key referencing Component (database name FK_a8eipu0i8qwgnn63bgj8e5iku) */
-    lazy val componentFk = foreignKey("FK_a8eipu0i8qwgnn63bgj8e5iku", id, Component)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
-  }
-  /** Collection-like TableQuery object for table Skill */
-  lazy val Skill = new TableQuery(tag => new Skill(tag))
 
   /**
    * Entity class storing rows of table User
@@ -363,26 +295,29 @@ trait Tables {
 
   /**
    * Entity class storing rows of table WorkExperience
+   *  @param id Database column id SqlType(BIGINT)
    *  @param description Database column description SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param place Database column place SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param title Database column title SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param yearFrom Database column year_from SqlType(INT)
    *  @param yearTo Database column year_to SqlType(INT)
-   *  @param id Database column id SqlType(BIGINT), PrimaryKey
+   *  @param userId Database column user_id SqlType(BIGINT)
    */
-  case class WorkExperienceRow(description: Option[String] = None, place: Option[String] = None, title: Option[String] = None, yearFrom: Int, yearTo: Int, id: Long)
+  case class WorkExperienceRow(id: Long, description: Option[String] = None, place: Option[String] = None, title: Option[String] = None, yearFrom: Int, yearTo: Int, userId: Long)
   /** GetResult implicit for fetching WorkExperienceRow objects using plain SQL queries */
-  implicit def GetResultWorkExperienceRow(implicit e0: GR[Option[String]], e1: GR[Int], e2: GR[Long]): GR[WorkExperienceRow] = GR {
+  implicit def GetResultWorkExperienceRow(implicit e0: GR[Long], e1: GR[Option[String]], e2: GR[Int]): GR[WorkExperienceRow] = GR {
     prs =>
       import prs._
-      WorkExperienceRow.tupled((<<?[String], <<?[String], <<?[String], <<[Int], <<[Int], <<[Long]))
+      WorkExperienceRow.tupled((<<[Long], <<?[String], <<?[String], <<?[String], <<[Int], <<[Int], <<[Long]))
   }
   /** Table description of table work_experience. Objects of this class serve as prototypes for rows in queries. */
   class WorkExperience(_tableTag: Tag) extends Table[WorkExperienceRow](_tableTag, "work_experience") {
-    def * = (description, place, title, yearFrom, yearTo, id) <> (WorkExperienceRow.tupled, WorkExperienceRow.unapply)
+    def * = (id, description, place, title, yearFrom, yearTo, userId) <> (WorkExperienceRow.tupled, WorkExperienceRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (description, place, title, Rep.Some(yearFrom), Rep.Some(yearTo), Rep.Some(id)).shaped.<>({ r => import r._; _4.map(_ => WorkExperienceRow.tupled((_1, _2, _3, _4.get, _5.get, _6.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), description, place, title, Rep.Some(yearFrom), Rep.Some(yearTo), Rep.Some(userId)).shaped.<>({ r => import r._; _1.map(_ => WorkExperienceRow.tupled((_1.get, _2, _3, _4, _5.get, _6.get, _7.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
+    /** Database column id SqlType(BIGINT) */
+    val id: Rep[Long] = column[Long]("id")
     /** Database column description SqlType(VARCHAR), Length(255,true), Default(None) */
     val description: Rep[Option[String]] = column[Option[String]]("description", O.Length(255, varying = true), O.Default(None))
     /** Database column place SqlType(VARCHAR), Length(255,true), Default(None) */
@@ -393,11 +328,14 @@ trait Tables {
     val yearFrom: Rep[Int] = column[Int]("year_from")
     /** Database column year_to SqlType(INT) */
     val yearTo: Rep[Int] = column[Int]("year_to")
-    /** Database column id SqlType(BIGINT), PrimaryKey */
-    val id: Rep[Long] = column[Long]("id", O.PrimaryKey)
+    /** Database column user_id SqlType(BIGINT) */
+    val userId: Rep[Long] = column[Long]("user_id")
 
-    /** Foreign key referencing Component (database name FK_sw03c0ljitehcflaw3wuuxwuv) */
-    lazy val componentFk = foreignKey("FK_sw03c0ljitehcflaw3wuuxwuv", id, Component)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
+    /** Primary key of WorkExperience (database name work_experience_PK) */
+    val pk = primaryKey("work_experience_PK", (id, userId))
+
+    /** Foreign key referencing User (database name fk_work_experience_user1) */
+    lazy val userFk = foreignKey("fk_work_experience_user1", userId, User)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
   }
   /** Collection-like TableQuery object for table WorkExperience */
   lazy val WorkExperience = new TableQuery(tag => new WorkExperience(tag))

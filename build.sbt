@@ -17,6 +17,7 @@ libraryDependencies ++= Seq(
 	"com.typesafe.play" %% "play-mailer" % "5.0.0",
 	"com.pauldijou" %% "jwt-play" % "0.8.0",
 	"com.pauldijou" %% "jwt-play-json" % "0.8.0" ,
+	"io.spray" %%  "spray-json" % "1.3.2",
 	specs2 % Test,
 	cache,
 	filters

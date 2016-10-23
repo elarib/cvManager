@@ -19,7 +19,7 @@ class CodeGenController @Inject() (environment: play.api.Environment, configurat
     val jdbcDriver = configuration.underlying.getString("db.driver")
     val url = configuration.underlying.getString("db.url")
     val outputFolder = environment.rootPath.getPath + "/app"
-    val pkg = "models.db"
+    val pkg = "models.slick"
     val user = configuration.underlying.getString("db.properties.user")
     val password = configuration.underlying.getString("db.properties.password")
 

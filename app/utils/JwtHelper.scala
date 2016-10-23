@@ -1,6 +1,6 @@
 package utils
 
-import models.User
+import models.{ User }
 import pdi.jwt.{ Jwt, JwtClaim, JwtJson, JwtAlgorithm }
 import play.api.libs.json.{ JsObject, Json }
 
