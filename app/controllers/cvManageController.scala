@@ -1,6 +1,7 @@
 package controllers
 
 import javax.inject.Inject
+import models.{ Component, User }
 import models.slick.Tables
 import models.Component._
 
@@ -13,8 +14,8 @@ import play.api.Configuration
 import play.api.i18n.{ I18nSupport, MessagesApi }
 import play.api.libs.json.{ Json, JsObject }
 import play.api.libs.mailer.MailerClient
-import play.api.mvc.{ Action, Controller }
-import utils.Secured
+import play.api.mvc.{ Cookie, Action, Controller }
+import utils.{ JwtHelper, Secured }
 
 import scala.concurrent.Future
 import scala.util.{ Failure, Success }
@@ -63,6 +64,82 @@ class cvManageController @Inject() (
           ).toJson
 
           Ok(list.prettyPrint)
+
+        case Failure(f) =>
+          BadRequest(f.getMessage)
+      })
+
+  }
+
+  def updateUserInfos = Authenticated.async(parse.json) {
+    implicit request =>
+      val userId = (request.body \ "id").getOrElse(json.JsNumber(0)).as[Long];
+      val email = (request.body \ "email").getOrElse(json.JsString("")).as[String]
+      val description = (request.body \ "description").getOrElse(json.JsString("")).as[String]
+      val age = (request.body \ "age").getOrElse(json.JsNumber(0)).as[Int]
+      val firstName = (request.body \ "firstName").getOrElse(json.JsString("")).as[String]
+      val lastName = (request.body \ "lastName").getOrElse(json.JsString("")).as[String]
+
+      User.updateUserInfoById(userId, email, description, age, firstName, lastName).map(_ match {
+        case Success(e) =>
+          //update Cookies JWT Token too
+          Ok(e + "")
+            .withCookies(Cookie("user", JwtHelper.generateJwtFromData(User(id = userId, firstName = firstName, lastName = lastName, email = email, description = description, age = age))))
+
+        case Failure(f) =>
+          BadRequest(f.getMessage)
+      })
+
+  }
+
+  def updateObjectif = Authenticated.async(parse.json) {
+    implicit request =>
+      val objectifId = (request.body \ "id").getOrElse(json.JsNumber(0)).as[Long];
+      val newObjectif = (request.body \ "content").getOrElse(json.JsString("")).as[String]
+
+      updateObjectifById(objectifId, newObjectif).map(_ match {
+        case Success(e) =>
+
+          Ok(e + "")
+
+        case Failure(f) =>
+          BadRequest(f.getMessage)
+      })
+
+  }
+
+  def updateEducation = Authenticated.async(parse.json) {
+    implicit request =>
+      val id = (request.body \ "id").getOrElse(json.JsNumber(0)).as[Long];
+      val description = (request.body \ "description").getOrElse(json.JsString("")).as[String]
+      val place = (request.body \ "place").getOrElse(json.JsString("")).as[String]
+      val yearFrom = (request.body \ "yearFrom").getOrElse(json.JsNumber(0)).as[Int]
+      val yearTo = (request.body \ "yearTo").getOrElse(json.JsNumber(0)).as[Int]
+
+      Component.updateEducationById(id, description, place, yearFrom, yearTo).map(_ match {
+        case Success(e) =>
+          //update Cookies JWT Token too
+          Ok(e + "")
+
+        case Failure(f) =>
+          BadRequest(f.getMessage)
+      })
+
+  }
+
+
+  def updateWork = Authenticated.async(parse.json) {
+    implicit request =>
+      val id = (request.body \ "id").getOrElse(json.JsNumber(0)).as[Long];
+      val description = (request.body \ "description").getOrElse(json.JsString("")).as[String]
+      val place = (request.body \ "place").getOrElse(json.JsString("")).as[String]
+      val yearFrom = (request.body \ "yearFrom").getOrElse(json.JsNumber(0)).as[Int]
+      val yearTo = (request.body \ "yearTo").getOrElse(json.JsNumber(0)).as[Int]
+
+      Component.updateWorkById(id, description, place, yearFrom, yearTo).map(_ match {
+        case Success(e) =>
+          //update Cookies JWT Token too
+          Ok(e + "")
 
         case Failure(f) =>
           BadRequest(f.getMessage)

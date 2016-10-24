@@ -14,6 +14,10 @@ GET     /login                              controllers.SignUpController.getView
 POST     /api/signup                            controllers.SignUpController.post
 POST     /api/signin                            controllers.SignInController.post
 GET      /api/userInfo                           controllers.cvManageController.getUserInfo
+POST      /api/userInfo                           controllers.cvManageController.updateUserInfos
+POST      /api/objectif                           controllers.cvManageController.updateObjectif
+POST      /api/education                           controllers.cvManageController.updateEducation
+POST      /api/work                           controllers.cvManageController.updateWork
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file)

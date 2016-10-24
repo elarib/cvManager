@@ -48,63 +48,26 @@ object Component extends DefaultJsonProtocol {
     val userObjectif = objectifs.filter(_.userId === userId)
     db.run(userObjectif.result.asTry)
   }
-}
 
-object Content {
-
-  //	implicit val objectifFormat = Json.format[ObjectifRow]
-
-  //	val component
-
-  //	val objectifs = Tables.Objectif
-  //	val skills = Tables.Skill
-  //	val competence = Tables.Skill
-  //	val skills = Tables.Skill
-  //
-  //	def findByUserId(userId: Long) = {
-  //		val query = for{
-  //			userObjectif <- objectifs.filter(_.id === userId)
-  //			userSkill <-  userSkills.filter(_.id === userId)
-  //		} yield (userObjectif,userSkill)
-  //
-  //		db.run(query.result.headOption.asTry)
-  //	}
-
-}
-
-object Objectif {
-
-  //	def findByUserId(userId: Long) = {
-  //		val query = objectifs.filter(_.id === userId)
-  //		db.run(query.result.headOption.asTry)
-  //	}
-
-}
-
-object Skill {
-
-  object Competence {
-
+  def updateObjectifById(id: Long, newObjectif: String) = {
+    val q = for { obj <- objectifs if obj.id === id } yield obj.content
+    val updateAction = q.update(Some(newObjectif))
+    db.run(updateAction.asTry)
   }
-  object ElementCompetence {
 
+  def updateEducationById(id: Long, newDescription: String, newPlace: String, newYearFrom: Int, newYearTo: Int) = {
+    val query = educations.filter(_.id === id)
+      .map(u => (u.description, u.place, u.yearFrom, u.yearTo))
+      .update(Some(newDescription), Some(newPlace), newYearFrom, newYearTo)
+    db.run(query.asTry)
+  }
+
+
+  def updateWorkById(id: Long, newDescription: String, newPlace: String, newYearFrom: Int, newYearTo: Int) = {
+    val query = workexperiences.filter(_.id === id)
+      .map(u => (u.description, u.place, u.yearFrom, u.yearTo))
+      .update(Some(newDescription), Some(newPlace), newYearFrom, newYearTo)
+    db.run(query.asTry)
   }
 
 }
-
-object Education {
-
-}
-
-object WorkExperience {
-
-}
-
-object UserInfo {
-
-}
-
-object Role {
-
-}
-

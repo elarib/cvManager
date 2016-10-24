@@ -14,16 +14,17 @@ cvApp.run(function($rootScope, getUserInfos) {
 			console.log(response.data);
 
 			var data = response.data;
-			var userInfos = data.user;
-			$rootScope.firstName = userInfos.firstName;
-			$rootScope.lastName = userInfos.lastName;
+			$rootScope.userInfos = data.user;
+			$rootScope.firstName = $rootScope.userInfos.firstName;
+			$rootScope.lastName = $rootScope.userInfos.lastName;
 
-			$rootScope.fullName = userInfos.firstName + " "
-				+ userInfos.lastName;
-			$rootScope.description = userInfos.description;
-			$rootScope.email = userInfos.email;
+			$rootScope.fullName = $rootScope.userInfos.firstName + " "
+				+ $rootScope.userInfos.lastName;
+			$rootScope.description = $rootScope.userInfos.description;
+			$rootScope.email = $rootScope.userInfos.email;
+			$rootScope.age = $rootScope.userInfos.age;
 
-			$rootScope.objectif = data.objectif.content;
+			$rootScope.objectif = data.objectif;
 
 			$rootScope.workexperiences = data.workexperiences;
 
@@ -43,16 +44,18 @@ cvApp.run(function($rootScope, getUserInfos) {
 });
 
 cvApp.controller('userInfoController', function($scope,
-		editUserService) {
+												editUserInfosService, $rootScope) {
 
 
 	$scope.editorEnabled = false;
 
 	$scope.enableEditor = function() {
 		$scope.editorEnabled = true;
-		$scope.editablefirstName = $scope.firstName;
-		$scope.editablelastName = $scope.lastName;
+		$scope.editableFirstName = $scope.firstName;
+		$scope.editableLastName = $scope.lastName;
 		$scope.editableDescription = $scope.description;
+		$scope.editableAge = $scope.age;
+		$scope.editableEmail = $scope.email;
 	};
 
 	$scope.disableEditor = function() {
@@ -60,16 +63,16 @@ cvApp.controller('userInfoController', function($scope,
 	};
 
 	$scope.save = function() {
-		$scope.title = $scope.editableTitle;
-		$scope.firstName = $scope.editablefirstName;
-		$scope.lastName = $scope.editablelastName;
-		$scope.fullName = $scope.editablefirstName + ' '
-				+ $scope.editablelastName;
-		$scope.description = $scope.editableDescription;
 
-		$infos = [ $scope.firstName, $scope.lastName, $scope.description ];
-		editUserService.req($infos).then(function successCallback(response) {
 
+		editUserInfosService.req($rootScope.userInfos.id, $scope.editableEmail, $scope.editableFirstName, $scope.editableLastName, $scope.editableAge, $scope.editableDescription).then(function successCallback(response) {
+			$scope.firstName = $scope.editableFirstName;
+			$scope.lastName = $scope.editableLastName;
+			$scope.fullName = $scope.editableFirstName + ' '
+				+ $scope.editableLastName;
+			$scope.description = $scope.editableDescription;
+			$scope.age = $scope.editableAge;
+			$scope.email = $scope.editableEmail;
 			console.log(response);
 
 		}, function errorCallback(response, status) {
@@ -128,10 +131,10 @@ cvApp.controller('userInfoController', function($scope,
 //
 //});
 //
-cvApp.controller('objectifController', function($scope, getObjectifService,
+cvApp.controller('objectifController', function($scope,
 		editObjectifService, $http, $resource) {
 
-	
+
 
 	$scope.editorEnabled = false;
 
@@ -152,7 +155,7 @@ cvApp.controller('objectifController', function($scope, getObjectifService,
 	$scope.save = function() {
 		$scope.title = $scope.editableTitle;
 
-		editObjectifService.req($scope.objectifID, $scope.title).then(
+		editObjectifService.req($scope.objectif.id, $scope.objectif.content).then(
 				function successCallback(response) {
 
 					console.log(response);
@@ -165,6 +168,49 @@ cvApp.controller('objectifController', function($scope, getObjectifService,
 	};
 
 });
+
+cvApp.controller('educationController', function($scope,
+												 editEducationService, $http, $resource) {
+
+
+
+	$scope.editorEnabled = false;
+
+	$scope.enableEditor = function($clickedElt) {
+		console.log("hoho");
+		$scope.editorEnabled = true;
+		$scope.clickedElt = $clickedElt;
+		$scope.editableDescription = $scope.educations[$clickedElt].description;
+		$scope.editablePlace = $scope.educations[$clickedElt].place;
+		$scope.editableYearFrom =  $scope.educations[$clickedElt].yearFrom;
+		$scope.editableYearTo =  $scope.educations[$clickedElt].yearTo ;
+
+	};
+
+	$scope.disableEditor = function() {
+
+		$scope.editorEnabled = false;
+	};
+	$scope.save = function($desc, $place, $yearFrom, $yearTo) {
+		console.log($scope);
+		editEducationService.req($scope.educations[$scope.clickedElt].id, $desc, $place,  $yearFrom, $yearTo).then(
+			function successCallback(response) {
+
+				console.log(response);
+
+				$scope.educations[$scope.clickedElt].description= $desc ;
+				$scope.educations[$scope.clickedElt].place = $place;
+				$scope.educations[$scope.clickedElt].yearFrom = $yearFrom;
+				$scope.educations[$scope.clickedElt].yearTo = $yearTo  ;
+			}, function errorCallback(response, status) {
+				console.log(response);
+			});
+
+		$scope.disableEditor();
+	};
+
+});
+
 //
 //// functions
 //

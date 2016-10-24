@@ -1,15 +1,37 @@
 <div class="page-header"></div>
-<div class="container" th:with="component='education'">
+<div class="container" ng-controller="educationController">
     <div class="row">
         <div class="col-xs-2">
             <h4>Education</h4>
         </div>
         <div class="col-xs-10">
             <div class="row">
-                <div class="col-xs-12" ng-repeat="education in educations">
-                    <p class="h5">{{education.place}}</p>
-                    <p class="small">{{education.yearFrom}} - {{education.yearTo}}</p>
-                    <p>{{education.description}}</p>
+
+                <div class="col-xs-12" ng-repeat="(key, education) in educations">
+                    <div ng-hide="editorEnabled && key==clickedElt">
+                        <a ng-click="enableEditor(key)" >
+                            <span class="glyphicon glyphicon-pencil edit">Edit</span>
+                        </a>
+                        <p class="h5">{{education.place}}</p>
+                        <p class="small">{{education.yearFrom}} - {{education.yearTo}}</p>
+                        <p>{{education.description}}</p>
+                    </div>
+                    <div ng-show="editorEnabled && key==clickedElt">
+                        <a ng-click="save(editableDescription, editablePlace, editableYearFrom, editableYearTo)">
+                            <span class="glyphicon glyphicon-floppy-saved save">Save</span>
+                        </a>
+                        or
+                        <a ng-click="disableEditor()">
+                            <span class="glyphicon glyphicon-floppy-remove cancel">Cancel</span>
+                        </a></br>
+                        <input ng-model="editableDescription" ng-show="editorEnabled" /> </br>
+                        <input ng-model="editablePlace" ng-show="editorEnabled" /> </br>
+                        <input ng-model="editableYearFrom" type="number" ng-show="editorEnabled" /> </br>
+                        <input ng-model="editableYearTo" type="number" ng-show="editorEnabled" /> </br>
+
+
+                    </div>
+
                 </div>
 
             </div>

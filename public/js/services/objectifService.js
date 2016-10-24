@@ -1,13 +1,13 @@
-cvApp.service('getObjectifService', function($http, $rootScope) {
-	console.log()
+cvApp.service('editObjectifService', function($http) {
+
 	var obj = {};
-	obj.req = function() {
+	obj.req = function($id, $newObjectif) {
 		var httpObj = {
-			method : 'GET',
-			url : 'api/users/'+$rootScope.userID+'/components?projection=detail',
-			headers : {
-				'Authorization' : 'Basic bWVAZWxhcmliLmNvbTplbGFyaWI=',
-				'Content-Type' : 'application/json'
+			method : 'POST',
+			url : '/api/objectif ',
+			data : {
+				"id" : $id,
+				"content" : $newObjectif
 			}
 
 		};
@@ -19,19 +19,44 @@ cvApp.service('getObjectifService', function($http, $rootScope) {
 
 });
 
-cvApp.service('editObjectifService', function($http) {
+cvApp.service('editEducationService', function($http) {
 
 	var obj = {};
-	obj.req = function($id, $newObjectif) {
+	obj.req = function($id, $desc, $place, $yearFrom, $yearTo) {
 		var httpObj = {
-			method : 'PATCH',
-			url : 'api/objectifs/'+$id,
-			headers : {
-				'Authorization' : 'Basic bWVAZWxhcmliLmNvbTplbGFyaWI=',
-				'Content-Type' : 'application/json'
-			},
+			method : 'POST',
+			url : '/api/education ',
 			data : {
-				"content" : $newObjectif
+				"id" : $id,
+				"description" : $desc,
+				"place" : $place,
+				"yearFrom" : $yearFrom,
+				"yearTo" : $yearTo
+			}
+
+		};
+
+		return $http(httpObj);
+	}
+
+	return obj;
+
+});
+
+
+cvApp.service('editWorkService', function($http) {
+
+	var obj = {};
+	obj.req = function($id, $desc, $place, $yearFrom, $yearTo) {
+		var httpObj = {
+			method : 'POST',
+			url : '/api/work ',
+			data : {
+				"id" : $id,
+				"description" : $desc,
+				"place" : $place,
+				"yearFrom" : $yearFrom,
+				"yearTo" : $yearTo
 			}
 
 		};

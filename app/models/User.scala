@@ -50,6 +50,13 @@ object User extends {
 
   }
 
+  def updateUserInfoById(userId: Long, email: String, description: String, age: Int, firstName: String, lastName: String) = {
+    val query = users.filter(_.id === userId)
+      .map(u => (u.email, u.description, u.age, u.firstName, u.lastName))
+      .update(Some(email), Some(description), age, Some(firstName), Some(lastName))
+    db.run(query.asTry)
+  }
+
 }
 case class User(id: Long, firstName: String, lastName: String, email: String, description: String, age: Int) {
   //def isAdmin: Boolean = (role.toLowerCase == "admin")
