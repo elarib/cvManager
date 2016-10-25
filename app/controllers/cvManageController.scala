@@ -63,11 +63,29 @@ class cvManageController @Inject() (
             "objectif" -> objectif,
             "educations" -> educations,
             "workexperiences" -> workexperiences,
-            "competences" -> competences.map(_.nameCmpt).toSet.map((e: String) =>
-              (new CompetenceDetails3(e, competences.filter(_.nameCmpt == e).map {
-                cmpt => (new CompetenceDetails(cmpt.idCmpt, cmpt.nameCmpt, cmpt.idElt, cmpt.nameElt, cmpt.detailElt))
-              }))).toJson
+            //						"competences" -> competences.map(_.nameCmpt)
+            //							.toSet.map((e: String) =>
+            //							(new CompetenceDetails3(e, competences.filter(_.nameCmpt == e).map {
+            //								cmpt => (new CompetenceDetails(cmpt.idCmpt, cmpt.nameCmpt, cmpt.idElt, cmpt.nameElt, cmpt.detailElt))
+            //							}))).toJson
+            //            "competences" -> competences.map(_.nameCmpt)
+            //              .toSet.map { (e: String) =>
+            //                val compFiltered = competences.filter(_.nameCmpt == e)
+            //                compFiltered.map {
+            //                  cmpt =>
+            //                    CompetenceDetails2(cmpt.idCmpt, cmpt.nameCmpt, compFiltered.map {
+            //                      elt => (new CompetenceElt2(cmpt.idElt, cmpt.nameElt, cmpt.detailElt))
+            //                    })
+            //                }
+            //
+            //              }.toJson
 
+            "competences" -> competences.map(c => (c.idCmpt, c.nameCmpt))
+              .toSet.map((e: (Long, String)) =>
+                (new CompetenceDetails2(e._1, e._2, competences.filter(_.idCmpt == e._1).map {
+                  cmpt =>
+                    (new CompetenceElt2(cmpt.idElt, cmpt.nameElt, cmpt.detailElt))
+                }))).toJson
           ).toJson
 
           Ok(list.prettyPrint)

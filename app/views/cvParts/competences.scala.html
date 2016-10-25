@@ -14,8 +14,8 @@
                        </a>
                    </p>
                     <div ng-show="editorCompetenceEnabled && competence == activeCompetence">
-                        <input type="text" ng-model="editableCompetence">
-                        <a ng-click="saveComeptence(editableCompetence)"><span
+                        <input type="text" ng-model="editableCompetence.nameCmpt">
+                        <a ng-click="saveComeptence(editableCompetence.idCmpt, editableCompetence.nameCmpt)"><span
                         class="glyphicon glyphicon-floppy-saved save">Save</span>
                         </a> or
                         <a ng-click="disableCompetenceEditor()">
@@ -23,7 +23,7 @@
                         </a>
 
                     </div>
-                    <div ng-repeat="elt in competence.data">
+                    <div ng-repeat="elt in competence.elts">
                         <p class="small" ng-hide="editorCompetenceEltEnabled && elt == activeEltCompetence">
                             <strong>{{elt.nameElt}}</strong> - {{elt.detailElt}}
                             <a ng-click="enableCompetenceEltEditor(elt)"  >
@@ -32,7 +32,7 @@
                         </p>
                         <div ng-show="editorCompetenceEltEnabled && elt == activeEltCompetence">
                             <input type="text" size="10" ng-model="editableEltCompetence.nameElt"> - <input type="text"  size="10" ng-model="editableEltCompetence.detailElt">
-                            <a ng-click="saveEltComeptence(editableEltCompetence)"><span
+                            <a ng-click="saveComeptenceElt(editableEltCompetence.idElt, editableEltCompetence.nameElt, editableEltCompetence.detailElt )"><span
                             class="glyphicon glyphicon-floppy-saved save">Save</span>
                             </a> or
                             <a ng-click="disableCompetenceEltEditor()">

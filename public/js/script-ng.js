@@ -11,7 +11,7 @@ cvApp.run(function($rootScope, getUserInfos) {
 
 	getUserInfos.req().then(
 		function successCallback(response) {
-			console.log(response.data);
+
 
 			var data = response.data;
 			$rootScope.userInfos = data.user;
@@ -33,7 +33,8 @@ cvApp.run(function($rootScope, getUserInfos) {
 			$rootScope.experiences = data.workexperiences;
 
 			$rootScope.competences = data.competences;
-			console.log($rootScope.objectif);
+
+
 
 		}, function errorCallback(response, status) {
 			console.log(response);
@@ -269,7 +270,7 @@ cvApp.controller('competenceController', function($scope,
 		$scope.editorCompetenceEnabled = true;
 		console.log($activeCompetence);
 		$scope.activeCompetence = $activeCompetence;
-		$scope.editableCompetence = $activeCompetence.nameCmpt;
+		$scope.editableCompetence = $activeCompetence;
 
 
 	};
@@ -281,17 +282,22 @@ cvApp.controller('competenceController', function($scope,
 
 
 	$scope.saveComeptence = function($id, $name) {
-		console.log($scope);
+
+
 		editCompetenceService.req($id, $name).then(
 			function successCallback(response) {
-
+				$scope.competences.map(function(cmpt){
+					if(cmpt.idCmpt == $id)
+						cmpt.nameCmpt = $name;
+					return cmpt;
+				})
 				console.log(response);
 
 			}, function errorCallback(response, status) {
 				console.log(response);
 			});
 
-		$scope.disableEditor();
+		$scope.disableCompetenceEditor();
 	};
 
 
@@ -310,6 +316,30 @@ cvApp.controller('competenceController', function($scope,
 
 		$scope.editorCompetenceEltEnabled = false;
 	};
+
+	$scope.saveComeptenceElt = function($id, $name, $detail) {
+
+		console.log($id, $name, $detail);
+		editCompetenceEltService.req($id, $name, $detail).then(
+			function successCallback(response) {
+				$scope.competences.map(function(cmpt){
+					return cmpt.elts.map(function(elt){
+						if(elt.idElt == $id)
+						{
+							elt.nameElt = $name,
+							elt.detailElt = $detail;
+						}
+					})
+				})
+				console.log(response);
+
+			}, function errorCallback(response, status) {
+				console.log(response);
+			});
+
+		$scope.disableCompetenceEltEditor();
+	};
+
 
 
 });

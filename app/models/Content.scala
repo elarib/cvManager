@@ -94,7 +94,7 @@ case class CompetenceDetails(idCmpt: Long, nameCmpt: String, idElt: Long, nameEl
 
 case class CompetenceDetails3(nameCmpt: String, data: Seq[CompetenceDetails])
 
-case class CompetenceDetails2(idCmpt: Long, nameCmpt: String, elt: CompetenceElt2)
+case class CompetenceDetails2(idCmpt: Long, nameCmpt: String, elts: Seq[CompetenceElt2])
 
 case class CompetenceElt2(idElt: Long, nameElt: String, detailElt: String)
 //case class CompetenceDetails2(idCmpt: Long, nameCmpt: String, elts: Seq[CompetenceElt])
