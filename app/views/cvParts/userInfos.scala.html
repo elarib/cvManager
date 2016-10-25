@@ -1,17 +1,20 @@
 <div class="container">
     <div class="row" th:with="component='infos'" ng-controller="userInfoController">
         <div class="col-xs-2">
-            <img class="img-thumbnail" src="@routes.Assets.versioned("images/avatar.jpg")" />
-            <a ng-click="editImg()">
-                <span class="glyphicon glyphicon-plus plus" style="text-align: left;">Edit Image</span>
-            </a>
+            <img class="img-thumbnail" src="https://www.gravatar.com/avatar/{{imgHash}}?s=200" />
         </div>
             <!-- 		 FullName & Description  -->
         <div class="col-xs-6 text-center" >
 
-            <div ng-hide="editorEnabled">
-                <a class="h2 center-block"><span>{{fullName}}</span></a> <a
-            class="h4 center-block">{{description}}</a> <a href="#"
+            <div ng-hide="editorEnabled" style=" text-align: left; ">
+                <a class="h2 center-block"><span>{{fullName}}</span></a>
+                </br>
+                <a  class="h4 center-block">{{description}}</a>
+                </br>
+                <a class="h5"><span>{{email}}</span></a> </br>
+                <a class="h5">Age : {{age}}</a>
+
+                <a
             ng-click="enableEditor()">
             </a>
             </div>

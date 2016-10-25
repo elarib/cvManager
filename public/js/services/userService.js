@@ -45,3 +45,27 @@ cvApp.service('editUserInfosService', function($http, $rootScope) {
 	return obj;
 
 });
+
+
+cvApp.service('uploadImgService', function($http) {
+
+	var obj = {};
+	obj.req = function($picture) {
+		var httpObj = {
+			method : 'POST',
+			url : '/api/uploadImg',
+			headers : {
+				'Content-Type' :  "multipart/form-data"
+			},
+			data : {
+				"picture" : $picture
+			}
+
+		};
+
+		return $http(httpObj);
+	}
+
+	return obj;
+
+});

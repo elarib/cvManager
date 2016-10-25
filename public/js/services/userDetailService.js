@@ -226,3 +226,22 @@ cvApp.service('addCompetenceEltService', function($http) {
 
 });
 
+
+
+cvApp.service('LogOutService', function($http) {
+
+	var obj = {};
+	obj.req = function() {
+		var httpObj = {
+			method : 'POST',
+			url : '/api/logout'
+		};
+
+		return $http(httpObj);
+	}
+
+	return obj;
+
+});
+
+

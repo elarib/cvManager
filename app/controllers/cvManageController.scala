@@ -1,6 +1,8 @@
 package controllers
 
+import java.security.MessageDigest
 import javax.inject.Inject
+import controllers.Assets.Asset
 import models.User
 import models._
 import models.slick.Tables
@@ -10,12 +12,12 @@ import models.slick.Tables._
 import play.api.libs.json
 import spray.json._
 import scala.concurrent.ExecutionContext.Implicits.global
-import play.api.Configuration
+import play.api.{ Play, Configuration }
 import play.api.i18n.{ I18nSupport, MessagesApi }
 import play.api.libs.json.{ Json, JsObject }
 import play.api.libs.mailer.MailerClient
-import play.api.mvc.{ Cookie, Action, Controller }
-import utils.{ JwtHelper, Secured }
+import play.api.mvc._
+import utils.{ Generator, JwtHelper, Secured }
 
 import scala.concurrent.Future
 import scala.util.{ Failure, Success }
@@ -39,14 +41,14 @@ class cvManageController @Inject() (
 
       models.Component.findByUserId(request.user.id).map(_ match {
         case Success(result) =>
-
           val user = Map(
             "id" -> (request.user.id).toJson,
             "firstName" -> (request.user.firstName).toJson,
             "lastName" -> (request.user.lastName).toJson,
             "email" -> (request.user.email).toJson,
             "description" -> (request.user.description).toJson,
-            "age" -> (request.user.age).toJson
+            "age" -> (request.user.age).toJson,
+            "imgHash" -> utils.Md5.hash((request.user.email).toLowerCase).toString.toJson
           )
 
           val objectif = result._1.toJson
@@ -299,7 +301,25 @@ class cvManageController @Inject() (
 
   }
 
+  //  def uploadImg = Authenticated.async(parse.multipartFormData) { request =>
 
-  
+  //    request.body.file("picture").map { picture =>
+  //      import java.io.File
+  //      val filename = picture.filename
+  //      val contentType = picture.contentType
+  //      import play.api.Play.current
+  //      picture.ref.moveTo(new File(s"public/assets/images/" + request.user.id))
+  //      Future.successful(Ok("File uploaded"))
+  //    }.getOrElse {
+  //      Future.successful(BadRequest("Error"))
+  //    }
+  //  }
+
+  def logout = Authenticated.async(parse.anyContent) {
+    implicit request =>
+      Future(Ok(Json.obj("message" -> "disconnected"))
+        .discardingCookies(DiscardingCookie("user")))
+
+  }
 
 }

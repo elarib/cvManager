@@ -13,6 +13,7 @@ GET     /codegen                           controllers.codegen.CodeGenController
 GET     /login                              controllers.SignUpController.getView
 POST     /api/signup                            controllers.SignUpController.post
 POST     /api/signin                            controllers.SignInController.post
+POST      /api/logout                           controllers.cvManageController.logout
 GET      /api/userInfo                           controllers.cvManageController.getUserInfo
 POST      /api/userInfo                           controllers.cvManageController.updateUserInfos
 POST      /api/objectif                           controllers.cvManageController.updateObjectif
@@ -25,6 +26,7 @@ POST      /api/newcompetence                           controllers.cvManageContr
 GET      /api/competences                           controllers.cvManageController.findAllCompetences
 POST      /api/competenceelt                           controllers.cvManageController.updateCompetenceElt
 POST      /api/newcompetenceelt                           controllers.cvManageController.addCompetenceElt
+#POST        /api/uploadImg                                  controllers.cvManageController.uploadImg
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file)

@@ -2,7 +2,7 @@
 
 
 
-var cvApp = angular.module('cvApp', [ 'ngResource' ]);
+var cvApp = angular.module('cvApp', [ 'ngResource', 'ngCookies' ]);
 
 cvApp.run(function($rootScope, getUserInfos) {
 	// var userID = document.getElementById("userDIV").value;
@@ -18,6 +18,7 @@ cvApp.run(function($rootScope, getUserInfos) {
 				$rootScope.userInfos = data.user;
 				$rootScope.firstName = $rootScope.userInfos.firstName;
 				$rootScope.lastName = $rootScope.userInfos.lastName;
+				$rootScope.imgHash = $rootScope.userInfos.imgHash;
 
 				$rootScope.fullName = $rootScope.userInfos.firstName + " "
 					+ $rootScope.userInfos.lastName;
@@ -47,6 +48,8 @@ cvApp.run(function($rootScope, getUserInfos) {
 	//$rootScope.userID = angular.element('#userID')[0].value;
 
 });
+
+
 
 cvApp.controller('userInfoController', function($scope,
 												editUserInfosService, $rootScope) {
@@ -86,6 +89,9 @@ cvApp.controller('userInfoController', function($scope,
 
 		$scope.disableEditor();
 	};
+
+
+
 
 });
 
@@ -491,6 +497,25 @@ cvApp.controller('SignUpController', function($scope,  SignUpService, SignUpServ
 
 
 	}
+
+});
+
+cvApp.controller('logoutController', function($scope, $rootScope, $window, LogOutService) {
+
+		$scope.logout = function(){
+			LogOutService.req().then(function(response){
+					console.log(response);
+				$window.location.reload();
+			},function(response){
+				console.log(response);
+			})
+
+
+
+		}
+	var delete_cookie = function(name) {
+		document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+	};
 
 });
 
