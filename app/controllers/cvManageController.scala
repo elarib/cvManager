@@ -64,9 +64,9 @@ class cvManageController @Inject() (
             "educations" -> educations,
             "workexperiences" -> workexperiences,
             "competences" -> competences.map(_.nameCmpt).toSet.map((e: String) =>
-              competences.filter(_.nameCmpt == e).map {
-                cmpt => (new CompetenceDetails2(cmpt.idCmpt, cmpt.nameCmpt, (new CompetenceElt2(cmpt.idElt, cmpt.nameElt, cmpt.detailElt))))
-              }).toJson
+              (new CompetenceDetails3(e, competences.filter(_.nameCmpt == e).map {
+                cmpt => (new CompetenceDetails(cmpt.idCmpt, cmpt.nameCmpt, cmpt.idElt, cmpt.nameElt, cmpt.detailElt))
+              }))).toJson
 
           ).toJson
 

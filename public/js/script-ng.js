@@ -265,8 +265,11 @@ cvApp.controller('competenceController', function($scope,
 
 	$scope.editorCompetenceEnabled = false;
 
-	$scope.enableCompetenceEditor = function() {
+	$scope.enableCompetenceEditor = function($activeCompetence) {
 		$scope.editorCompetenceEnabled = true;
+		console.log($activeCompetence);
+		$scope.activeCompetence = $activeCompetence;
+		$scope.editableCompetence = $activeCompetence.nameCmpt;
 
 
 	};
@@ -295,8 +298,10 @@ cvApp.controller('competenceController', function($scope,
 
 	$scope.editorCompetenceEltEnabled = false;
 
-	$scope.enableCompetenceEditor = function() {
+	$scope.enableCompetenceEltEditor = function($activeEltCompetence) {
 		$scope.editorCompetenceEltEnabled = true;
+		$scope.activeEltCompetence = $activeEltCompetence;
+		$scope.editableEltCompetence = $activeEltCompetence;
 
 
 	};

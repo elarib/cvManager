@@ -26,6 +26,7 @@ object Component extends DefaultJsonProtocol {
   implicit val competencesDetailsFormat = jsonFormat5(CompetenceDetails)
   implicit val competencesDetails2Format = jsonFormat3(CompetenceElt2)
   implicit val competencesDetails3Format = jsonFormat3(CompetenceDetails2)
+  implicit val competencesDetails4Format = jsonFormat2(CompetenceDetails3)
 
   //  val components = Tables.Component
   val objectifs = Tables.Objectif
@@ -90,6 +91,8 @@ object Component extends DefaultJsonProtocol {
 }
 
 case class CompetenceDetails(idCmpt: Long, nameCmpt: String, idElt: Long, nameElt: String, detailElt: String)
+
+case class CompetenceDetails3(nameCmpt: String, data: Seq[CompetenceDetails])
 
 case class CompetenceDetails2(idCmpt: Long, nameCmpt: String, elt: CompetenceElt2)
 
