@@ -2,7 +2,7 @@
 
 
 
-var cvApp = angular.module('cvApp', [ 'ngResource', 'ngCookies' ]);
+var cvApp = angular.module('cvApp', [ 'ngResource']);
 
 cvApp.run(function($rootScope, getUserInfos) {
 	// var userID = document.getElementById("userDIV").value;
@@ -487,12 +487,13 @@ cvApp.controller('SignUpController', function($scope,  SignUpService, SignUpServ
 		console.log($scope.signUpModel);
 		SignUpService.req($scope.signUpModel).then(function successCallback(response) {
 
+			$scope.msg = "Registration Successful!  You can Login now";
 			console.log(response);
 
 		}, function errorCallback(response, status) {
 
 			console.log(response);
-			$scope.error=response.data.message;
+			$scope.error=response.data;
 		});
 
 

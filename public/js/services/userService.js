@@ -1,7 +1,6 @@
 cvApp.service('getUserInfos', function($http, $rootScope) {
 
 	var obj = {};
-	console.log($rootScope.userID);
 	obj.req = function($userID) {
 		var httpObj = {
 			method : 'GET',
