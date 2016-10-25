@@ -67,3 +67,49 @@ cvApp.service('editWorkService', function($http) {
 	return obj;
 
 });
+
+
+
+cvApp.service('editCompetenceService', function($http) {
+
+	var obj = {};
+	obj.req = function($id, $name) {
+		var httpObj = {
+			method : 'POST',
+			url : '/api/competence ',
+			data : {
+				"id" : $id,
+				"name" : $name
+			}
+
+		};
+
+		return $http(httpObj);
+	}
+
+	return obj;
+
+});
+
+cvApp.service('editCompetenceEltService', function($http) {
+
+	var obj = {};
+	obj.req = function($id, $name, $detail) {
+		var httpObj = {
+			method : 'POST',
+			url : '/api/competenceelt ',
+			data : {
+				"id" : $id,
+				"name" : $name,
+				"detail" : $detail
+
+			}
+
+		};
+
+		return $http(httpObj);
+	}
+
+	return obj;
+
+});

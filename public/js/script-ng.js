@@ -211,6 +211,106 @@ cvApp.controller('educationController', function($scope,
 
 });
 
+
+
+cvApp.controller('workController', function($scope,
+												 editWorkService, $http, $resource) {
+
+
+
+	$scope.editorEnabled = false;
+
+	$scope.enableEditor = function($clickedElt) {
+		console.log("hoho");
+		$scope.editorEnabled = true;
+		$scope.clickedElt = $clickedElt;
+		$scope.editableDescription = $scope.experiences[$clickedElt].description;
+		$scope.editablePlace = $scope.experiences[$clickedElt].place;
+		$scope.editableYearFrom =  $scope.experiences[$clickedElt].yearFrom;
+		$scope.editableYearTo =  $scope.experiences[$clickedElt].yearTo ;
+
+	};
+
+	$scope.disableEditor = function() {
+
+		$scope.editorEnabled = false;
+	};
+	$scope.save = function($desc, $place, $yearFrom, $yearTo) {
+		console.log($scope);
+		editWorkService.req($scope.experiences[$scope.clickedElt].id, $desc, $place,  $yearFrom, $yearTo).then(
+			function successCallback(response) {
+
+				console.log(response);
+
+				$scope.experiences[$scope.clickedElt].description= $desc ;
+				$scope.experiences[$scope.clickedElt].place = $place;
+				$scope.experiences[$scope.clickedElt].yearFrom = $yearFrom;
+				$scope.experiences[$scope.clickedElt].yearTo = $yearTo  ;
+			}, function errorCallback(response, status) {
+				console.log(response);
+			});
+
+		$scope.disableEditor();
+	};
+
+});
+
+
+
+
+cvApp.controller('competenceController', function($scope,
+												  editCompetenceService, editCompetenceEltService, $http, $resource) {
+
+
+
+	$scope.editorCompetenceEnabled = false;
+
+	$scope.enableCompetenceEditor = function() {
+		$scope.editorCompetenceEnabled = true;
+
+
+	};
+
+	$scope.disableCompetenceEditor = function() {
+
+		$scope.editorCompetenceEnabled = false;
+	};
+
+
+	$scope.saveComeptence = function($id, $name) {
+		console.log($scope);
+		editCompetenceService.req($id, $name).then(
+			function successCallback(response) {
+
+				console.log(response);
+
+			}, function errorCallback(response, status) {
+				console.log(response);
+			});
+
+		$scope.disableEditor();
+	};
+
+
+
+	$scope.editorCompetenceEltEnabled = false;
+
+	$scope.enableCompetenceEditor = function() {
+		$scope.editorCompetenceEltEnabled = true;
+
+
+	};
+
+	$scope.disableCompetenceEltEditor = function() {
+
+		$scope.editorCompetenceEltEnabled = false;
+	};
+
+
+});
+
+
+
 //
 //// functions
 //

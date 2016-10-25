@@ -1,14 +1,13 @@
 package controllers
 
 import javax.inject.Inject
-import models.{ Component, User }
+import models._
 import models.slick.Tables
 import models.Component._
 
 import models.slick.Tables.ObjectifRow
 import play.api.libs.json
 import spray.json._
-import models.Content._
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.Configuration
 import play.api.i18n.{ I18nSupport, MessagesApi }
@@ -52,14 +51,22 @@ class cvManageController @Inject() (
           val objectif = result._1.toJson
           val workexperiences = result._2.toJson
           val educations = result._3.toJson
-          val competences = result._4.map(_._1).toSet.map((e: Option[String]) => Map(e.getOrElse("") -> result._4.filter(_._1 == e).map(elt => Map("name" -> elt._2, "detail" -> elt._3))))
+          //          val competences = result._4.map(_._1).toSet.map((e: Option[String]) => Map(e.getOrElse("") -> result._4.filter(_._1 == e).map(elt => Map("name" -> elt._3, "detail" -> elt._4))))
+          //          val competences = result._4.map(cpmt => Map("name" -> cpmt._1, "idElt" -> cpmt._2, "nameElt" -> cpmt._3, "detailElt" -> cpmt._4)).toJson
+          val competences = result._4.map(cpmt => new CompetenceDetails(idCmpt = cpmt._1, nameCmpt = cpmt._2.getOrElse(""), idElt = cpmt._3, nameElt = cpmt._4.getOrElse(""), detailElt = cpmt._5.getOrElse("")))
+
+          //          val competences = result._4.map(cpmt => new CompetenceDetails(idCmpt = 1, nameCmpt = cpmt._1, idElt = cpmt._2, nameElt = cpmt._3, detailElt = cpmt._4.getOrElse("")))
+          //          val competences = result._4.map(cpmt => new CompetenceDetails2(idCmpt = 1, nameCmpt = cpmt._1.getOrElse(""), idElt = cpmt._2, nameElt = cpmt._3.getOrElse(""), detailElt = cpmt._4.getOrElse("")))
 
           val list = Map(
             "user" -> user.toJson,
             "objectif" -> objectif,
             "educations" -> educations,
             "workexperiences" -> workexperiences,
-            "competences" -> competences.toJson
+            "competences" -> competences.map(_.nameCmpt).toSet.map((e: String) =>
+              competences.filter(_.nameCmpt == e).map {
+                cmpt => (new CompetenceDetails2(cmpt.idCmpt, cmpt.nameCmpt, (new CompetenceElt2(cmpt.idElt, cmpt.nameElt, cmpt.detailElt))))
+              }).toJson
 
           ).toJson
 
@@ -127,7 +134,6 @@ class cvManageController @Inject() (
 
   }
 
-
   def updateWork = Authenticated.async(parse.json) {
     implicit request =>
       val id = (request.body \ "id").getOrElse(json.JsNumber(0)).as[Long];
@@ -137,6 +143,39 @@ class cvManageController @Inject() (
       val yearTo = (request.body \ "yearTo").getOrElse(json.JsNumber(0)).as[Int]
 
       Component.updateWorkById(id, description, place, yearFrom, yearTo).map(_ match {
+        case Success(e) =>
+          //update Cookies JWT Token too
+          Ok(e + "")
+
+        case Failure(f) =>
+          BadRequest(f.getMessage)
+      })
+
+  }
+
+  def updateCompetence = Authenticated.async(parse.json) {
+    implicit request =>
+      val id = (request.body \ "id").getOrElse(json.JsNumber(0)).as[Long];
+      val name = (request.body \ "name").getOrElse(json.JsString("")).as[String]
+
+      Component.updateCmptById(id, name).map(_ match {
+        case Success(e) =>
+          //update Cookies JWT Token too
+          Ok(e + "")
+
+        case Failure(f) =>
+          BadRequest(f.getMessage)
+      })
+
+  }
+
+  def updateCompetenceElt = Authenticated.async(parse.json) {
+    implicit request =>
+      val id = (request.body \ "id").getOrElse(json.JsNumber(0)).as[Long];
+      val name = (request.body \ "name").getOrElse(json.JsString("")).as[String]
+      val detail = (request.body \ "detail").getOrElse(json.JsString("")).as[String]
+
+      Component.updateCmptEltById(id, name, detail).map(_ match {
         case Success(e) =>
           //update Cookies JWT Token too
           Ok(e + "")

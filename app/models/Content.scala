@@ -23,6 +23,9 @@ object Component extends DefaultJsonProtocol {
   implicit val educationFormat = jsonFormat6(EducationRow)
   implicit val competencesFormat = jsonFormat3(CompetenceRow)
   implicit val competencesEltFormat = jsonFormat4(CompetenceEltRow)
+  implicit val competencesDetailsFormat = jsonFormat5(CompetenceDetails)
+  implicit val competencesDetails2Format = jsonFormat3(CompetenceElt2)
+  implicit val competencesDetails3Format = jsonFormat3(CompetenceDetails2)
 
   //  val components = Tables.Component
   val objectifs = Tables.Objectif
@@ -38,7 +41,9 @@ object Component extends DefaultJsonProtocol {
       userWorkExperences <- workexperiences.filter(_.userId === userId).result
       userEducations <- educations.filter(_.userId === userId).result
       userCompetences <- (competences.filter(_.userId === userId) join competenceElts on (_.id === _.competenceId))
-        .map(cpt => (cpt._1.name, cpt._2.name, cpt._2.detail)).result
+        .map(cpt => (cpt._1.id, cpt._1.name, cpt._2.id, cpt._2.name, cpt._2.detail)).result
+      userCompetences2 <- (competences.filter(_.userId === userId) join competenceElts on (_.id === _.competenceId))
+        .map(cpt => (cpt._1.id, cpt._1.name, cpt._2.id, cpt._2.name, cpt._2.detail)).result
     } yield (userObjectif, userWorkExperences, userEducations, userCompetences)
 
     db.run(query.asTry)
@@ -62,7 +67,6 @@ object Component extends DefaultJsonProtocol {
     db.run(query.asTry)
   }
 
-
   def updateWorkById(id: Long, newDescription: String, newPlace: String, newYearFrom: Int, newYearTo: Int) = {
     val query = workexperiences.filter(_.id === id)
       .map(u => (u.description, u.place, u.yearFrom, u.yearTo))
@@ -70,4 +74,24 @@ object Component extends DefaultJsonProtocol {
     db.run(query.asTry)
   }
 
+  def updateCmptById(id: Long, newName: String) = {
+    val query = competences.filter(_.id === id)
+      .map(u => (u.name))
+      .update(Some(newName))
+    db.run(query.asTry)
+  }
+
+  def updateCmptEltById(id: Long, newName: String, newDetail: String) = {
+    val query = competenceElts.filter(_.id === id)
+      .map(u => (u.name, u.detail))
+      .update(Some(newName), Some(newDetail))
+    db.run(query.asTry)
+  }
 }
+
+case class CompetenceDetails(idCmpt: Long, nameCmpt: String, idElt: Long, nameElt: String, detailElt: String)
+
+case class CompetenceDetails2(idCmpt: Long, nameCmpt: String, elt: CompetenceElt2)
+
+case class CompetenceElt2(idElt: Long, nameElt: String, detailElt: String)
+//case class CompetenceDetails2(idCmpt: Long, nameCmpt: String, elts: Seq[CompetenceElt])
