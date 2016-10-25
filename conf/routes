@@ -17,9 +17,14 @@ GET      /api/userInfo                           controllers.cvManageController.
 POST      /api/userInfo                           controllers.cvManageController.updateUserInfos
 POST      /api/objectif                           controllers.cvManageController.updateObjectif
 POST      /api/education                           controllers.cvManageController.updateEducation
+POST      /api/neweducation                           controllers.cvManageController.addEducation
 POST      /api/work                           controllers.cvManageController.updateWork
+POST      /api/newwork                           controllers.cvManageController.addWork
 POST      /api/competence                           controllers.cvManageController.updateCompetence
+POST      /api/newcompetence                           controllers.cvManageController.addCompetence
+GET      /api/competences                           controllers.cvManageController.findAllCompetences
 POST      /api/competenceelt                           controllers.cvManageController.updateCompetenceElt
+POST      /api/newcompetenceelt                           controllers.cvManageController.addCompetenceElt
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file)

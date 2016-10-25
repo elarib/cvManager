@@ -295,7 +295,7 @@ trait Tables {
 
   /**
    * Entity class storing rows of table WorkExperience
-   *  @param id Database column id SqlType(BIGINT)
+   *  @param id Database column id SqlType(BIGINT), AutoInc
    *  @param description Database column description SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param place Database column place SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param title Database column title SqlType(VARCHAR), Length(255,true), Default(None)
@@ -316,8 +316,8 @@ trait Tables {
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(id), description, place, title, Rep.Some(yearFrom), Rep.Some(yearTo), Rep.Some(userId)).shaped.<>({ r => import r._; _1.map(_ => WorkExperienceRow.tupled((_1.get, _2, _3, _4, _5.get, _6.get, _7.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
-    /** Database column id SqlType(BIGINT) */
-    val id: Rep[Long] = column[Long]("id")
+    /** Database column id SqlType(BIGINT), AutoInc */
+    val id: Rep[Long] = column[Long]("id", O.AutoInc)
     /** Database column description SqlType(VARCHAR), Length(255,true), Default(None) */
     val description: Rep[Option[String]] = column[Option[String]]("description", O.Length(255, varying = true), O.Default(None))
     /** Database column place SqlType(VARCHAR), Length(255,true), Default(None) */

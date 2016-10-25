@@ -2,6 +2,9 @@
     <div class="row" th:with="component='infos'" ng-controller="userInfoController">
         <div class="col-xs-2">
             <img class="img-thumbnail" src="@routes.Assets.versioned("images/avatar.jpg")" />
+            <a ng-click="editImg()">
+                <span class="glyphicon glyphicon-plus plus" style="text-align: left;">Edit Image</span>
+            </a>
         </div>
             <!-- 		 FullName & Description  -->
         <div class="col-xs-6 text-center" >
@@ -14,13 +17,13 @@
             </div>
             <div ng-show="editorEnabled">
                 <input
-                ng-model="editableFirstName" ng-show="editorEnabled" /> <input
-            ng-model="editableLastName" ng-show="editorEnabled" /> <input
-            ng-model="editableDescription" ng-show="editorEnabled" />
+                ng-model="editableFirstName" ng-show="editorEnabled"  placeholder="First Name" /> <input
+            ng-model="editableLastName" ng-show="editorEnabled"  placeholder="Last Name" /> <input
+            ng-model="editableDescription" ng-show="editorEnabled"  placeholder="Description" />
                 <input
-                ng-model="editableAge" type="number" ng-show="editorEnabled" />
+                ng-model="editableAge" type="number" ng-show="editorEnabled"  placeholder="Age" />
                 <input
-                ng-model="editableEmail" ng-show="editorEnabled" />
+                ng-model="editableEmail" ng-show="editorEnabled"  placeholder="Email" />
 
 
             </div>
@@ -48,7 +51,7 @@
                         <div ng-repeat="info in infos | orderBy:'order' "
                         ng-show="editorEnabled">
                             <span class="{{info.icon}}"> <input
-                            ng-model="info.content" />
+                            ng-model="info.content"  placeholder="content" />
                             </span>
                         </div>
                         <a href="#" ng-click="save()"><span

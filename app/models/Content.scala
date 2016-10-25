@@ -68,10 +68,20 @@ object Component extends DefaultJsonProtocol {
     db.run(query.asTry)
   }
 
-  def updateWorkById(id: Long, newDescription: String, newPlace: String, newYearFrom: Int, newYearTo: Int) = {
+  def addEducation(educationRow: EducationRow) = {
+    val query = educations returning educations.map(_.id) += educationRow
+    db.run(query.asTry)
+  }
+
+  def updateWorkById(id: Long, newDescription: String, newPlace: String, newTitle: String, newYearFrom: Int, newYearTo: Int) = {
     val query = workexperiences.filter(_.id === id)
-      .map(u => (u.description, u.place, u.yearFrom, u.yearTo))
-      .update(Some(newDescription), Some(newPlace), newYearFrom, newYearTo)
+      .map(u => (u.description, u.place, u.title, u.yearFrom, u.yearTo))
+      .update(Some(newDescription), Some(newPlace), Some(newTitle), newYearFrom, newYearTo)
+    db.run(query.asTry)
+  }
+
+  def addWork(workExperience: WorkExperienceRow) = {
+    val query = workexperiences returning workexperiences.map(_.id) += workExperience
     db.run(query.asTry)
   }
 
@@ -82,10 +92,25 @@ object Component extends DefaultJsonProtocol {
     db.run(query.asTry)
   }
 
+  def addCompetence(competenceRow: CompetenceRow) = {
+    val query = competences returning competences.map(_.id) += competenceRow
+    db.run(query.asTry)
+  }
+
+  def findAllCompetences(userId: Long) = {
+    val query = competences.filter(_.userId === userId).result
+    db.run(query.asTry)
+  }
+
   def updateCmptEltById(id: Long, newName: String, newDetail: String) = {
     val query = competenceElts.filter(_.id === id)
       .map(u => (u.name, u.detail))
       .update(Some(newName), Some(newDetail))
+    db.run(query.asTry)
+  }
+
+  def addCompetenceElt(competenceEltRow: CompetenceEltRow) = {
+    val query = competenceElts returning competenceElts.map(_.id) += competenceEltRow
     db.run(query.asTry)
   }
 }

@@ -3,10 +3,45 @@
     <div class="row">
         <div class="col-xs-2">
             <h4>Competences</h4>
+            <a ng-click="addNew()">
+                <span class="glyphicon glyphicon-plus plus">Competence</span>
+            </a>
+            <a ng-click="addNewElt()">
+                <span class="glyphicon glyphicon-plus plus">Competence Element</span>
+            </a>
         </div>
         <div class="col-xs-10">
             <div class="row">
-                <div class="col-xs-5" ng-repeat="competence in competences">
+                <div class="col-xs-5" ng-show="newEditorEnabled">
+                    <a ng-click="saveNew(newName)">
+                        <span class="glyphicon glyphicon-plus plus">Add</span>
+                    </a>
+                    or
+                    <a ng-click="disableNewAddEditor()">
+                        <span class="glyphicon glyphicon-floppy-remove cancel">Cancel</span>
+                    </a></br>
+                    <input ng-model="newName" ng-show="newEditorEnabled"  placeholder="Competence Name"/> </br>
+
+
+                </div>
+
+                <div class="col-xs-5" ng-show="newEditorEltEnabled">
+                    <a ng-click="saveNewElt( cId, newName, newDetail)">
+                        <span class="glyphicon glyphicon-plus plus">Add</span>
+                    </a>
+                    or
+                    <a ng-click="disableNewEltAddEditor()">
+                        <span class="glyphicon glyphicon-floppy-remove cancel">Cancel</span>
+                    </a></br>
+                    <select name="cId" ng-model="cId" >
+                        <option ng-repeat="option in allCompetences" ng-value="option.id"  placeholder="Competence Name">{{option.name}}</option>
+                    </select>
+                    <input ng-model="newName" ng-show="newEditorEltEnabled"  placeholder="Element Name"/> </br>
+                    <input ng-model="newDetail" ng-show="newEditorEltEnabled"  placeholder="Element Detail" /> </br>
+
+
+                </div>
+                <div class="col-md-{{competencesSize}}" ng-repeat="competence in competences">
 
                    <p class="h5" ng-hide="editorCompetenceEnabled && competence == activeCompetence"> {{competence.nameCmpt}}
                        <a ng-click="enableCompetenceEditor(competence)" >
@@ -14,7 +49,7 @@
                        </a>
                    </p>
                     <div ng-show="editorCompetenceEnabled && competence == activeCompetence">
-                        <input type="text" ng-model="editableCompetence.nameCmpt">
+                        <input type="text" ng-model="editableCompetence.nameCmpt" placeholder="Competence Name">
                         <a ng-click="saveComeptence(editableCompetence.idCmpt, editableCompetence.nameCmpt)"><span
                         class="glyphicon glyphicon-floppy-saved save">Save</span>
                         </a> or
@@ -31,7 +66,7 @@
                             </a>
                         </p>
                         <div ng-show="editorCompetenceEltEnabled && elt == activeEltCompetence">
-                            <input type="text" size="10" ng-model="editableEltCompetence.nameElt"> - <input type="text"  size="10" ng-model="editableEltCompetence.detailElt">
+                            <input type="text" size="10" ng-model="editableEltCompetence.nameElt"  placeholder="Element Name"> - <input type="text"  size="10"  placeholder="Element Detail" ng-model="editableEltCompetence.detailElt">
                             <a ng-click="saveComeptenceElt(editableEltCompetence.idElt, editableEltCompetence.nameElt, editableEltCompetence.detailElt )"><span
                             class="glyphicon glyphicon-floppy-saved save">Save</span>
                             </a> or

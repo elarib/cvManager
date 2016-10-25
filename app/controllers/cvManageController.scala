@@ -1,11 +1,12 @@
 package controllers
 
 import javax.inject.Inject
+import models.User
 import models._
 import models.slick.Tables
 import models.Component._
 
-import models.slick.Tables.ObjectifRow
+import models.slick.Tables._
 import play.api.libs.json
 import spray.json._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -57,7 +58,10 @@ class cvManageController @Inject() (
 
           //          val competences = result._4.map(cpmt => new CompetenceDetails(idCmpt = 1, nameCmpt = cpmt._1, idElt = cpmt._2, nameElt = cpmt._3, detailElt = cpmt._4.getOrElse("")))
           //          val competences = result._4.map(cpmt => new CompetenceDetails2(idCmpt = 1, nameCmpt = cpmt._1.getOrElse(""), idElt = cpmt._2, nameElt = cpmt._3.getOrElse(""), detailElt = cpmt._4.getOrElse("")))
-
+          "competences" -> competences.map(c => (c.idCmpt, c.nameCmpt))
+            .toSet.map {
+              (r: (Long, String)) => println(r._2)
+            }
           val list = Map(
             "user" -> user.toJson,
             "objectif" -> objectif,
@@ -82,10 +86,16 @@ class cvManageController @Inject() (
 
             "competences" -> competences.map(c => (c.idCmpt, c.nameCmpt))
               .toSet.map((e: (Long, String)) =>
-                (new CompetenceDetails2(e._1, e._2, competences.filter(_.idCmpt == e._1).map {
-                  cmpt =>
-                    (new CompetenceElt2(cmpt.idElt, cmpt.nameElt, cmpt.detailElt))
-                }))).toJson
+                (new CompetenceDetails2(e._1, e._2,
+                  if (competences.filter(_.idCmpt == e._1).isEmpty) {
+                    println("empty " + e._2)
+                    Nil
+                  } else {
+                    competences.filter(_.idCmpt == e._1).map {
+                      cmpt =>
+                        (new CompetenceElt2(cmpt.idElt, cmpt.nameElt, cmpt.detailElt))
+                    }
+                  }))).toJson
           ).toJson
 
           Ok(list.prettyPrint)
@@ -105,11 +115,11 @@ class cvManageController @Inject() (
       val firstName = (request.body \ "firstName").getOrElse(json.JsString("")).as[String]
       val lastName = (request.body \ "lastName").getOrElse(json.JsString("")).as[String]
 
-      User.updateUserInfoById(userId, email, description, age, firstName, lastName).map(_ match {
+      models.User.updateUserInfoById(userId, email, description, age, firstName, lastName).map(_ match {
         case Success(e) =>
           //update Cookies JWT Token too
           Ok(e + "")
-            .withCookies(Cookie("user", JwtHelper.generateJwtFromData(User(id = userId, firstName = firstName, lastName = lastName, email = email, description = description, age = age))))
+            .withCookies(Cookie("user", JwtHelper.generateJwtFromData(models.User(id = userId, firstName = firstName, lastName = lastName, email = email, description = description, age = age))))
 
         case Failure(f) =>
           BadRequest(f.getMessage)
@@ -135,7 +145,7 @@ class cvManageController @Inject() (
 
   def updateEducation = Authenticated.async(parse.json) {
     implicit request =>
-      val id = (request.body \ "id").getOrElse(json.JsNumber(0)).as[Long];
+      val id = (request.body \ "id").getOrElse(json.JsNumber(0)).as[Long]
       val description = (request.body \ "description").getOrElse(json.JsString("")).as[String]
       val place = (request.body \ "place").getOrElse(json.JsString("")).as[String]
       val yearFrom = (request.body \ "yearFrom").getOrElse(json.JsNumber(0)).as[Int]
@@ -154,13 +164,14 @@ class cvManageController @Inject() (
 
   def updateWork = Authenticated.async(parse.json) {
     implicit request =>
-      val id = (request.body \ "id").getOrElse(json.JsNumber(0)).as[Long];
+      val id = (request.body \ "id").getOrElse(json.JsNumber(0)).as[Long]
+      val title = (request.body \ "title").getOrElse(json.JsString("")).as[String]
       val description = (request.body \ "description").getOrElse(json.JsString("")).as[String]
       val place = (request.body \ "place").getOrElse(json.JsString("")).as[String]
       val yearFrom = (request.body \ "yearFrom").getOrElse(json.JsNumber(0)).as[Int]
       val yearTo = (request.body \ "yearTo").getOrElse(json.JsNumber(0)).as[Int]
 
-      Component.updateWorkById(id, description, place, yearFrom, yearTo).map(_ match {
+      Component.updateWorkById(id, description, place, title, yearFrom, yearTo).map(_ match {
         case Success(e) =>
           //update Cookies JWT Token too
           Ok(e + "")
@@ -203,5 +214,92 @@ class cvManageController @Inject() (
       })
 
   }
+
+  def addWork = Authenticated.async(parse.json) {
+    implicit request =>
+      val description = (request.body \ "description").getOrElse(json.JsString("")).as[String]
+      val title = (request.body \ "title").getOrElse(json.JsString("")).as[String]
+      val place = (request.body \ "place").getOrElse(json.JsString("")).as[String]
+      val yearFrom = (request.body \ "yearFrom").getOrElse(json.JsNumber(0)).as[Int]
+      val yearTo = (request.body \ "yearTo").getOrElse(json.JsNumber(0)).as[Int]
+
+      Component.addWork(new WorkExperienceRow(0, Some(description), Some(place), Some(title), yearFrom, yearTo, request.user.id)).map(_ match {
+        case Success(e) =>
+          //update Cookies JWT Token too
+          Ok(e + "")
+
+        case Failure(f) =>
+          BadRequest(f.getMessage)
+      })
+
+  }
+
+  def addEducation = Authenticated.async(parse.json) {
+    implicit request =>
+      val description = (request.body \ "description").getOrElse(json.JsString("")).as[String]
+      val place = (request.body \ "place").getOrElse(json.JsString("")).as[String]
+      val yearFrom = (request.body \ "yearFrom").getOrElse(json.JsNumber(0)).as[Int]
+      val yearTo = (request.body \ "yearTo").getOrElse(json.JsNumber(0)).as[Int]
+
+      Component.addEducation(new EducationRow(0, Some(description), Some(place), yearFrom, yearTo, request.user.id)).map(_ match {
+        case Success(e) =>
+          //update Cookies JWT Token too
+          Ok(e + "")
+
+        case Failure(f) =>
+          BadRequest(f.getMessage)
+      })
+
+  }
+
+  def addCompetence = Authenticated.async(parse.json) {
+    implicit request =>
+      val name = (request.body \ "name").getOrElse(json.JsString("")).as[String]
+
+      Component.addCompetence(new CompetenceRow(0, Some(name), request.user.id)).map(_ match {
+        case Success(e) =>
+          //update Cookies JWT Token too
+          Ok(e + "")
+
+        case Failure(f) =>
+          BadRequest(f.getMessage)
+      })
+
+  }
+
+  def addCompetenceElt = Authenticated.async(parse.json) {
+    implicit request =>
+      val newName = (request.body \ "name").getOrElse(json.JsString("")).as[String]
+      val newDetail = (request.body \ "detail").getOrElse(json.JsString("")).as[String]
+      val cmptId = (request.body \ "idCmpt").getOrElse(json.JsString("")).as[Long]
+
+      Component.addCompetenceElt(new CompetenceEltRow(0, Some(newDetail), Some(newName), cmptId)).map(_ match {
+        case Success(e) =>
+          //update Cookies JWT Token too
+          Ok(e + "")
+
+        case Failure(f) =>
+          BadRequest(f.getMessage)
+      })
+
+  }
+
+  def findAllCompetences = Authenticated.async(parse.anyContent) {
+    implicit request =>
+
+      Component.findAllCompetences(request.user.id).map(_ match {
+        case Success(e) =>
+          //update Cookies JWT Token too
+
+          Ok(e.toJson.prettyPrint)
+
+        case Failure(f) =>
+          BadRequest(f.getMessage)
+      })
+
+  }
+
+
+  
 
 }

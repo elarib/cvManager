@@ -3,31 +3,52 @@
     <div class="row">
         <div class="col-xs-2">
             <h4>Work Experience</h4>
+            <a ng-click="addNew()">
+                <span class="glyphicon glyphicon-plus plus">Add </span>
+            </a>
         </div>
         <div class="col-xs-10">
             <div class="row">
+                <div ng-show="newEditorEnabled">
+                    <a ng-click="saveNew(newTitle, newDescription, newPlace, newYearFrom, newYearTo)">
+                        <span class="glyphicon glyphicon-plus plus">Add</span>
+                    </a>
+                    or
+                    <a ng-click="disableNewAddEditor()">
+                        <span class="glyphicon glyphicon-floppy-remove cancel">Cancel</span>
+                    </a></br>
+                    <input ng-model="newTitle" ng-show="newEditorEnabled" placeholder="Title"/> </br>
+                    <input ng-model="newDescription" ng-show="newEditorEnabled" placeholder="Description"/> </br>
+                    <input ng-model="newPlace" ng-show="newEditorEnabled" placeholder="Place"/> </br>
+                    <input ng-model="newYearFrom" type="number" ng-show="newEditorEnabled" placeholder="Year From"/> </br>
+                    <input ng-model="newYearTo" type="number" ng-show="newEditorEnabled" placeholder="Year To"/> </br>
+
+
+                </div>
 
                 <div class="col-xs-12" ng-repeat="(key, experience) in experiences">
                     <div ng-hide="editorEnabled && key==clickedElt">
                         <a ng-click="enableEditor(key)" >
                             <span class="glyphicon glyphicon-pencil edit">Edit</span>
                         </a>
+                        <p class="h5">{{experience.title}}</p>
                         <p class="h5">{{experience.place}}</p>
                         <p class="small">{{experience.yearFrom}} - {{experience.yearTo}}</p>
                         <p>{{experience.description}}</p>
                     </div>
                     <div ng-show="editorEnabled && key==clickedElt">
-                        <a ng-click="save(editableDescription, editablePlace, editableYearFrom, editableYearTo)">
+                        <a ng-click="save(editableTitle, editableDescription, editablePlace, editableYearFrom, editableYearTo)">
                             <span class="glyphicon glyphicon-floppy-saved save">Save</span>
                         </a>
                         or
                         <a ng-click="disableEditor()">
                             <span class="glyphicon glyphicon-floppy-remove cancel">Cancel</span>
                         </a></br>
-                        <input ng-model="editableDescription" ng-show="editorEnabled" /> </br>
-                        <input ng-model="editablePlace" ng-show="editorEnabled" /> </br>
-                        <input ng-model="editableYearFrom" type="number" ng-show="editorEnabled" /> </br>
-                        <input ng-model="editableYearTo" type="number" ng-show="editorEnabled" /> </br>
+                        <input ng-model="editableTitle" ng-show="editorEnabled" placeholder="Title"/> </br>
+                        <input ng-model="editableDescription" ng-show="editorEnabled" placeholder="Description"/> </br>
+                        <input ng-model="editablePlace" ng-show="editorEnabled" placeholder="Place"/> </br>
+                        <input ng-model="editableYearFrom" type="number" ng-show="editorEnabled" placeholder="Year From"/> </br>
+                        <input ng-model="editableYearTo" type="number" ng-show="editorEnabled" placeholder="Year To"/> </br>
 
 
                     </div>

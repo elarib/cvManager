@@ -9,37 +9,41 @@ cvApp.run(function($rootScope, getUserInfos) {
 
 
 
-	getUserInfos.req().then(
-		function successCallback(response) {
+	$rootScope.getUserInfos = function(){
+		getUserInfos.req().then(
+			function successCallback(response) {
 
 
-			var data = response.data;
-			$rootScope.userInfos = data.user;
-			$rootScope.firstName = $rootScope.userInfos.firstName;
-			$rootScope.lastName = $rootScope.userInfos.lastName;
+				var data = response.data;
+				$rootScope.userInfos = data.user;
+				$rootScope.firstName = $rootScope.userInfos.firstName;
+				$rootScope.lastName = $rootScope.userInfos.lastName;
 
-			$rootScope.fullName = $rootScope.userInfos.firstName + " "
-				+ $rootScope.userInfos.lastName;
-			$rootScope.description = $rootScope.userInfos.description;
-			$rootScope.email = $rootScope.userInfos.email;
-			$rootScope.age = $rootScope.userInfos.age;
+				$rootScope.fullName = $rootScope.userInfos.firstName + " "
+					+ $rootScope.userInfos.lastName;
+				$rootScope.description = $rootScope.userInfos.description;
+				$rootScope.email = $rootScope.userInfos.email;
+				$rootScope.age = $rootScope.userInfos.age;
 
-			$rootScope.objectif = data.objectif;
+				$rootScope.objectif = data.objectif;
 
-			$rootScope.workexperiences = data.workexperiences;
+				$rootScope.workexperiences = data.workexperiences;
 
-			$rootScope.educations = data.educations;
+				$rootScope.educations = data.educations;
 
-			$rootScope.experiences = data.workexperiences;
+				$rootScope.experiences = data.workexperiences;
 
-			$rootScope.competences = data.competences;
+				$rootScope.competences = data.competences;
+				$rootScope.competencesSize = (12/$rootScope.competences.length);
 
 
 
-		}, function errorCallback(response, status) {
-			console.log(response);
-		});
+			}, function errorCallback(response, status) {
+				console.log(response);
+			});
 
+	}
+	$rootScope.getUserInfos();
 	//$rootScope.userID = angular.element('#userID')[0].value;
 
 });
@@ -84,54 +88,7 @@ cvApp.controller('userInfoController', function($scope,
 	};
 
 });
-//
-//cvApp.controller('userInfosController', function($scope, getUserInfosService,
-//		editUserInfosService) {
-//
-//	var numberOfInfos = 0;
-//
-//	getUserInfosService.req().then(function successCallback(response) {
-//
-//		numberOfInfos = response.data._embedded.userInfos.length;
-//
-//		$scope.numberOfInfos = numberOfInfos;
-//		$scope.infos = response.data._embedded.userInfos;
-//
-//		setIconOfInfo($scope.infos);
-//		console.log($scope.infos);
-//
-//	}, function errorCallback(response, status) {
-//		console.log(response);
-//	});
-//
-//	$scope.editorEnabled = false;
-//
-//	$scope.enableEditor = function() {
-//		$scope.editorEnabled = true;
-//
-//	};
-//
-//	$scope.disableEditor = function() {
-//		$scope.editorEnabled = false;
-//	};
-//
-//	$scope.save = function() {
-//
-//		angular.forEach($scope.infos, function(info, key) {
-//
-//			editUserInfosService.req(info.id, info.content).then(
-//					function successCallback(response) {
-//
-//					}, function errorCallback(response, status) {
-//						console.log(response);
-//					});
-//		});
-//
-//		$scope.disableEditor();
-//	};
-//
-//});
-//
+
 cvApp.controller('objectifController', function($scope,
 		editObjectifService, $http, $resource) {
 
@@ -171,7 +128,7 @@ cvApp.controller('objectifController', function($scope,
 });
 
 cvApp.controller('educationController', function($scope,
-												 editEducationService, $http, $resource) {
+												 editEducationService, $http, $resource, addEducationService) {
 
 
 
@@ -210,12 +167,49 @@ cvApp.controller('educationController', function($scope,
 		$scope.disableEditor();
 	};
 
+
+
+	$scope.newEditorEnabled= false;
+
+	$scope.addNew = function(){
+		$scope.newEditorEnabled = true;
+
+
+	}
+
+	$scope.saveNew =function($newDescription, $newPlace, $newYearFrom, $newYearTo){
+
+		addEducationService.req($newDescription, $newPlace,  $newYearFrom, $newYearTo).then(
+			function successCallback(response) {
+
+				console.log(response);
+
+				$scope.educations.push({
+					"id" : response.data ,
+					"description" : $newDescription,
+					"place" : $newDescription,
+					"yearFrom" : $newYearFrom,
+					"yearTo" : $newYearTo
+
+				})
+			}, function errorCallback(response, status) {
+				console.log(response);
+			});
+		$scope.disableNewAddEditor();
+	}
+
+
+	$scope.disableNewAddEditor = function() {
+
+		$scope.newEditorEnabled = false;
+	};
+
 });
 
 
 
 cvApp.controller('workController', function($scope,
-												 editWorkService, $http, $resource) {
+												 editWorkService, $http, $resource, addWorkService) {
 
 
 
@@ -225,6 +219,7 @@ cvApp.controller('workController', function($scope,
 		console.log("hoho");
 		$scope.editorEnabled = true;
 		$scope.clickedElt = $clickedElt;
+		$scope.editableTitle = $scope.experiences[$clickedElt].title;
 		$scope.editableDescription = $scope.experiences[$clickedElt].description;
 		$scope.editablePlace = $scope.experiences[$clickedElt].place;
 		$scope.editableYearFrom =  $scope.experiences[$clickedElt].yearFrom;
@@ -236,9 +231,9 @@ cvApp.controller('workController', function($scope,
 
 		$scope.editorEnabled = false;
 	};
-	$scope.save = function($desc, $place, $yearFrom, $yearTo) {
+	$scope.save = function($title, $desc, $place, $yearFrom, $yearTo) {
 		console.log($scope);
-		editWorkService.req($scope.experiences[$scope.clickedElt].id, $desc, $place,  $yearFrom, $yearTo).then(
+		editWorkService.req($scope.experiences[$scope.clickedElt].id, $title, $desc, $place,  $yearFrom, $yearTo).then(
 			function successCallback(response) {
 
 				console.log(response);
@@ -254,13 +249,49 @@ cvApp.controller('workController', function($scope,
 		$scope.disableEditor();
 	};
 
+	$scope.newEditorEnabled= false;
+
+	$scope.addNew = function(){
+		$scope.newEditorEnabled = true;
+
+
+	}
+
+	$scope.saveNew =function($newTitle, $newDescription, $newPlace, $newYearFrom, $newYearTo){
+
+		addWorkService.req($newTitle, $newDescription, $newPlace,  $newYearFrom, $newYearTo).then(
+			function successCallback(response) {
+
+				console.log(response);
+
+				$scope.experiences.push({
+					"id" : response.data ,
+					"title" :  $newTitle,
+					"description" : $newDescription,
+					"place" : $newDescription,
+					"yearFrom" : $newYearFrom,
+					"yearTo" : $newYearTo
+
+				})
+			}, function errorCallback(response, status) {
+				console.log(response);
+			});
+		$scope.disableNewAddEditor();
+	}
+
+
+	$scope.disableNewAddEditor = function() {
+
+		$scope.newEditorEnabled = false;
+	};
+
 });
 
 
 
 
-cvApp.controller('competenceController', function($scope,
-												  editCompetenceService, editCompetenceEltService, $http, $resource) {
+cvApp.controller('competenceController', function($scope, $rootScope,
+												  editCompetenceService, editCompetenceEltService, $http, $resource, addCompetenceService, addCompetenceEltService, findAllCompetenceService) {
 
 
 
@@ -341,49 +372,83 @@ cvApp.controller('competenceController', function($scope,
 	};
 
 
+	$scope.newEditorEnabled= false;
+
+	$scope.addNew = function(){
+
+		$scope.newEditorEnabled = true;
+	}
+
+	$scope.saveNew =function($newName){
+
+		addCompetenceService.req($newName).then(
+			function successCallback(response) {
+
+				console.log(response);
+
+				$scope.competences.push({
+					"id" : response.data ,
+					"name" :  $newName
+				})
+			}, function errorCallback(response, status) {
+				console.log(response);
+			});
+		$scope.disableNewAddEditor();
+	}
+
+
+	$scope.disableNewAddEditor = function() {
+
+		$scope.newEditorEnabled = false;
+	};
+
+
+
+	$scope.findAll = function(){
+		findAllCompetenceService.req().then(
+			function successCallback(response) {
+				$scope.allCompetences = response.data;
+				console.log(response);
+
+
+			}, function errorCallback(response, status) {
+				console.log(response);
+			});
+	}
+
+
+	$scope.allCompetences=[];
+	$scope.newEditorEltEnabled= false;
+
+	$scope.addNewElt = function(){
+
+
+		$scope.findAll();
+		$scope.newEditorEltEnabled = true;
+	}
+
+	$scope.saveNewElt =function($idCmpt, $newName, $newDetail){
+		console.log($idCmpt, $newName, $newDetail);
+		addCompetenceEltService.req($newName, $newDetail, Number($idCmpt)).then(
+			function successCallback(response) {
+
+				console.log(response);
+
+				$rootScope.getUserInfos();
+			}, function errorCallback(response, status) {
+				console.log(response);
+			});
+		$scope.disableNewEltAddEditor();
+	}
+
+
+	$scope.disableNewEltAddEditor = function() {
+
+		$scope.newEditorEltEnabled = false;
+	};
+
 
 });
-
-
-
-//
-//// functions
-//
-//var setIconOfInfo = function(infos) {
-//
-//	for (var i = infos.length; i--;) {
-//		console.log(i + "  " + infos[i].type);
-//		switch (infos[i].type) {
-//		case 'HOME':
-//			infos[i].icon = 'fa fa-home';
-//			break;
-//		case 'EMAIL':
-//			infos[i].icon = 'fa fa-envelope';
-//			break;
-//		case 'MOBILEPHONE':
-//			infos[i].icon = 'fa fa-mobile';
-//			break;
-//		case 'FACEBOOK':
-//			infos[i].icon = 'fa fa-facebook-square';
-//			break;
-//		case 'GITHUB':
-//			infos[i].icon = 'fa fa-github-square';
-//			break;
-//		case 'LINKEDIN':
-//			infos[i].icon = 'fa fa-linkedin-square';
-//			break;
-//
-//		default:
-//			break;
-//		}
-//
-//	}
-//
-//}
-
-
-
-
 
 
 cvApp.controller('SignInController', function($scope,  SignInService, SignUpService, $http, $resource, $window) {
