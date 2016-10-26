@@ -61,6 +61,11 @@ object Component extends DefaultJsonProtocol {
     db.run(updateAction.asTry)
   }
 
+  def addNewObjectif(newObjectif: String, userId: Long) = {
+    val query = objectifs returning objectifs.map(_.id) += new ObjectifRow(id = 0, content = Some(newObjectif), userId = userId)
+    db.run(query.asTry)
+  }
+
   def updateEducationById(id: Long, newDescription: String, newPlace: String, newYearFrom: Int, newYearTo: Int) = {
     val query = educations.filter(_.id === id)
       .map(u => (u.description, u.place, u.yearFrom, u.yearTo))

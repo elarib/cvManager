@@ -136,8 +136,19 @@ class cvManageController @Inject() (
 
       updateObjectifById(objectifId, newObjectif).map(_ match {
         case Success(e) =>
+          if (e == 0) {
+            addNewObjectif(newObjectif, request.user.id).map(_ match {
+              case Success(e) =>
+                //update Cookies JWT Token too
+                (e + "")
 
-          Ok(e + "")
+              case Failure(f) =>
+                (f.getMessage)
+            })
+            Ok(e + "")
+          } else {
+            Ok(e + "")
+          }
 
         case Failure(f) =>
           BadRequest(f.getMessage)
