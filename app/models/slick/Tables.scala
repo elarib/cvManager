@@ -14,13 +14,13 @@ trait Tables {
   import slick.jdbc.{ GetResult => GR }
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema: profile.SchemaDescription = Array(Competence.schema, CompetenceElt.schema, Education.schema, Objectif.schema, Role.schema, User.schema, UserInfo.schema, WorkExperience.schema).reduceLeft(_ ++ _)
+  lazy val schema: profile.SchemaDescription = Array(Competence.schema, CompetenceElt.schema, Education.schema, Objectif.schema, User.schema, WorkExperience.schema).reduceLeft(_ ++ _)
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
 
   /**
    * Entity class storing rows of table Competence
-   *  @param id Database column id SqlType(BIGINT), AutoInc
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param name Database column name SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param userId Database column user_id SqlType(BIGINT)
    */
@@ -37,15 +37,12 @@ trait Tables {
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(id), name, Rep.Some(userId)).shaped.<>({ r => import r._; _1.map(_ => CompetenceRow.tupled((_1.get, _2, _3.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
-    /** Database column id SqlType(BIGINT), AutoInc */
-    val id: Rep[Long] = column[Long]("id", O.AutoInc)
+    /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
+    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
     /** Database column name SqlType(VARCHAR), Length(255,true), Default(None) */
     val name: Rep[Option[String]] = column[Option[String]]("name", O.Length(255, varying = true), O.Default(None))
     /** Database column user_id SqlType(BIGINT) */
     val userId: Rep[Long] = column[Long]("user_id")
-
-    /** Primary key of Competence (database name competence_PK) */
-    val pk = primaryKey("competence_PK", (id, userId))
 
     /** Foreign key referencing User (database name fk_competence_user1) */
     lazy val userFk = foreignKey("fk_competence_user1", userId, User)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
@@ -55,7 +52,7 @@ trait Tables {
 
   /**
    * Entity class storing rows of table CompetenceElt
-   *  @param id Database column id SqlType(BIGINT), AutoInc
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param detail Database column detail SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param name Database column name SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param competenceId Database column competence_id SqlType(BIGINT)
@@ -73,17 +70,14 @@ trait Tables {
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(id), detail, name, Rep.Some(competenceId)).shaped.<>({ r => import r._; _1.map(_ => CompetenceEltRow.tupled((_1.get, _2, _3, _4.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
-    /** Database column id SqlType(BIGINT), AutoInc */
-    val id: Rep[Long] = column[Long]("id", O.AutoInc)
+    /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
+    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
     /** Database column detail SqlType(VARCHAR), Length(255,true), Default(None) */
     val detail: Rep[Option[String]] = column[Option[String]]("detail", O.Length(255, varying = true), O.Default(None))
     /** Database column name SqlType(VARCHAR), Length(255,true), Default(None) */
     val name: Rep[Option[String]] = column[Option[String]]("name", O.Length(255, varying = true), O.Default(None))
     /** Database column competence_id SqlType(BIGINT) */
     val competenceId: Rep[Long] = column[Long]("competence_id")
-
-    /** Primary key of CompetenceElt (database name competence_elt_PK) */
-    val pk = primaryKey("competence_elt_PK", (id, competenceId))
 
     /** Foreign key referencing Competence (database name fk_element_competence_competence1) */
     lazy val competenceFk = foreignKey("fk_element_competence_competence1", competenceId, Competence)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
@@ -93,7 +87,7 @@ trait Tables {
 
   /**
    * Entity class storing rows of table Education
-   *  @param id Database column id SqlType(BIGINT), AutoInc
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param description Database column description SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param place Database column place SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param yearFrom Database column year_from SqlType(INT)
@@ -113,8 +107,8 @@ trait Tables {
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(id), description, place, Rep.Some(yearFrom), Rep.Some(yearTo), Rep.Some(userId)).shaped.<>({ r => import r._; _1.map(_ => EducationRow.tupled((_1.get, _2, _3, _4.get, _5.get, _6.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
-    /** Database column id SqlType(BIGINT), AutoInc */
-    val id: Rep[Long] = column[Long]("id", O.AutoInc)
+    /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
+    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
     /** Database column description SqlType(VARCHAR), Length(255,true), Default(None) */
     val description: Rep[Option[String]] = column[Option[String]]("description", O.Length(255, varying = true), O.Default(None))
     /** Database column place SqlType(VARCHAR), Length(255,true), Default(None) */
@@ -126,9 +120,6 @@ trait Tables {
     /** Database column user_id SqlType(BIGINT) */
     val userId: Rep[Long] = column[Long]("user_id")
 
-    /** Primary key of Education (database name education_PK) */
-    val pk = primaryKey("education_PK", (id, userId))
-
     /** Foreign key referencing User (database name fk_education_user1) */
     lazy val userFk = foreignKey("fk_education_user1", userId, User)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
   }
@@ -137,7 +128,7 @@ trait Tables {
 
   /**
    * Entity class storing rows of table Objectif
-   *  @param id Database column id SqlType(BIGINT), AutoInc
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param content Database column content SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param userId Database column user_id SqlType(BIGINT)
    */
@@ -154,53 +145,18 @@ trait Tables {
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(id), content, Rep.Some(userId)).shaped.<>({ r => import r._; _1.map(_ => ObjectifRow.tupled((_1.get, _2, _3.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
-    /** Database column id SqlType(BIGINT), AutoInc */
-    val id: Rep[Long] = column[Long]("id", O.AutoInc)
+    /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
+    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
     /** Database column content SqlType(VARCHAR), Length(255,true), Default(None) */
     val content: Rep[Option[String]] = column[Option[String]]("content", O.Length(255, varying = true), O.Default(None))
     /** Database column user_id SqlType(BIGINT) */
     val userId: Rep[Long] = column[Long]("user_id")
-
-    /** Primary key of Objectif (database name objectif_PK) */
-    val pk = primaryKey("objectif_PK", (id, userId))
 
     /** Foreign key referencing User (database name fk_objectif_user1) */
     lazy val userFk = foreignKey("fk_objectif_user1", userId, User)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
   }
   /** Collection-like TableQuery object for table Objectif */
   lazy val Objectif = new TableQuery(tag => new Objectif(tag))
-
-  /**
-   * Entity class storing rows of table Role
-   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
-   *  @param nomRole Database column nom_role SqlType(VARCHAR), Length(255,true), Default(None)
-   *  @param idUser Database column id_user SqlType(BIGINT), Default(None)
-   */
-  case class RoleRow(id: Long, nomRole: Option[String] = None, idUser: Option[Long] = None)
-  /** GetResult implicit for fetching RoleRow objects using plain SQL queries */
-  implicit def GetResultRoleRow(implicit e0: GR[Long], e1: GR[Option[String]], e2: GR[Option[Long]]): GR[RoleRow] = GR {
-    prs =>
-      import prs._
-      RoleRow.tupled((<<[Long], <<?[String], <<?[Long]))
-  }
-  /** Table description of table role. Objects of this class serve as prototypes for rows in queries. */
-  class Role(_tableTag: Tag) extends Table[RoleRow](_tableTag, "role") {
-    def * = (id, nomRole, idUser) <> (RoleRow.tupled, RoleRow.unapply)
-    /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), nomRole, idUser).shaped.<>({ r => import r._; _1.map(_ => RoleRow.tupled((_1.get, _2, _3))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
-
-    /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
-    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
-    /** Database column nom_role SqlType(VARCHAR), Length(255,true), Default(None) */
-    val nomRole: Rep[Option[String]] = column[Option[String]]("nom_role", O.Length(255, varying = true), O.Default(None))
-    /** Database column id_user SqlType(BIGINT), Default(None) */
-    val idUser: Rep[Option[Long]] = column[Option[Long]]("id_user", O.Default(None))
-
-    /** Foreign key referencing User (database name FK_6ef3ncawl3rqvadr03pi804um) */
-    lazy val userFk = foreignKey("FK_6ef3ncawl3rqvadr03pi804um", idUser, User)(r => Rep.Some(r.id), onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
-  }
-  /** Collection-like TableQuery object for table Role */
-  lazy val Role = new TableQuery(tag => new Role(tag))
 
   /**
    * Entity class storing rows of table User
@@ -250,52 +206,8 @@ trait Tables {
   lazy val User = new TableQuery(tag => new User(tag))
 
   /**
-   * Entity class storing rows of table UserInfo
-   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
-   *  @param content Database column content SqlType(VARCHAR), Length(255,true), Default(None)
-   *  @param orderOfView Database column order_of_view SqlType(INT)
-   *  @param `type` Database column type SqlType(VARCHAR), Length(255,true), Default(None)
-   *  @param idUser Database column id_user SqlType(BIGINT), Default(None)
-   */
-  case class UserInfoRow(id: Long, content: Option[String] = None, orderOfView: Int, `type`: Option[String] = None, idUser: Option[Long] = None)
-  /** GetResult implicit for fetching UserInfoRow objects using plain SQL queries */
-  implicit def GetResultUserInfoRow(implicit e0: GR[Long], e1: GR[Option[String]], e2: GR[Int], e3: GR[Option[Long]]): GR[UserInfoRow] = GR {
-    prs =>
-      import prs._
-      UserInfoRow.tupled((<<[Long], <<?[String], <<[Int], <<?[String], <<?[Long]))
-  }
-  /**
-   * Table description of table user_info. Objects of this class serve as prototypes for rows in queries.
-   *  NOTE: The following names collided with Scala keywords and were escaped: type
-   */
-  class UserInfo(_tableTag: Tag) extends Table[UserInfoRow](_tableTag, "user_info") {
-    def * = (id, content, orderOfView, `type`, idUser) <> (UserInfoRow.tupled, UserInfoRow.unapply)
-    /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), content, Rep.Some(orderOfView), `type`, idUser).shaped.<>({ r => import r._; _1.map(_ => UserInfoRow.tupled((_1.get, _2, _3.get, _4, _5))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
-
-    /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
-    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
-    /** Database column content SqlType(VARCHAR), Length(255,true), Default(None) */
-    val content: Rep[Option[String]] = column[Option[String]]("content", O.Length(255, varying = true), O.Default(None))
-    /** Database column order_of_view SqlType(INT) */
-    val orderOfView: Rep[Int] = column[Int]("order_of_view")
-    /**
-     * Database column type SqlType(VARCHAR), Length(255,true), Default(None)
-     *  NOTE: The name was escaped because it collided with a Scala keyword.
-     */
-    val `type`: Rep[Option[String]] = column[Option[String]]("type", O.Length(255, varying = true), O.Default(None))
-    /** Database column id_user SqlType(BIGINT), Default(None) */
-    val idUser: Rep[Option[Long]] = column[Option[Long]]("id_user", O.Default(None))
-
-    /** Foreign key referencing User (database name FK_mnhqyihjjfydarcg6yy2lpoya) */
-    lazy val userFk = foreignKey("FK_mnhqyihjjfydarcg6yy2lpoya", idUser, User)(r => Rep.Some(r.id), onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)
-  }
-  /** Collection-like TableQuery object for table UserInfo */
-  lazy val UserInfo = new TableQuery(tag => new UserInfo(tag))
-
-  /**
    * Entity class storing rows of table WorkExperience
-   *  @param id Database column id SqlType(BIGINT), AutoInc
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param description Database column description SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param place Database column place SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param title Database column title SqlType(VARCHAR), Length(255,true), Default(None)
@@ -316,8 +228,8 @@ trait Tables {
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(id), description, place, title, Rep.Some(yearFrom), Rep.Some(yearTo), Rep.Some(userId)).shaped.<>({ r => import r._; _1.map(_ => WorkExperienceRow.tupled((_1.get, _2, _3, _4, _5.get, _6.get, _7.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
-    /** Database column id SqlType(BIGINT), AutoInc */
-    val id: Rep[Long] = column[Long]("id", O.AutoInc)
+    /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
+    val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
     /** Database column description SqlType(VARCHAR), Length(255,true), Default(None) */
     val description: Rep[Option[String]] = column[Option[String]]("description", O.Length(255, varying = true), O.Default(None))
     /** Database column place SqlType(VARCHAR), Length(255,true), Default(None) */
@@ -330,9 +242,6 @@ trait Tables {
     val yearTo: Rep[Int] = column[Int]("year_to")
     /** Database column user_id SqlType(BIGINT) */
     val userId: Rep[Long] = column[Long]("user_id")
-
-    /** Primary key of WorkExperience (database name work_experience_PK) */
-    val pk = primaryKey("work_experience_PK", (id, userId))
 
     /** Foreign key referencing User (database name fk_work_experience_user1) */
     lazy val userFk = foreignKey("fk_work_experience_user1", userId, User)(r => r.id, onUpdate = ForeignKeyAction.NoAction, onDelete = ForeignKeyAction.NoAction)

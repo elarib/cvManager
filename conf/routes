@@ -5,6 +5,7 @@
 # Home page
 GET     /                                   controllers.cvManageController.cv
 GET     /codegen                           controllers.codegen.CodeGenController.generateTableScala
+GET     /dbgen                           controllers.codegen.CodeGenController.generateTableDB
 
 
 
