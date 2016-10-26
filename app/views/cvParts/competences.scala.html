@@ -25,19 +25,22 @@
 
                 </div>
 
-                <div class="col-xs-5" ng-show="newEditorEltEnabled">
-                    <a ng-click="saveNewElt( cId, newName, newDetail)">
+                <div ng-show="newEditorEltEnabled">
+                    <a ng-click="saveNewElt( cId, newEltName, newEltDetail)">
                         <span class="glyphicon glyphicon-plus plus">Add</span>
                     </a>
                     or
                     <a ng-click="disableNewEltAddEditor()">
                         <span class="glyphicon glyphicon-floppy-remove cancel">Cancel</span>
                     </a></br>
-                    <select name="cId" ng-model="cId" >
-                        <option ng-repeat="option in allCompetences" ng-value="option.id"  placeholder="Competence Name">{{option.name}}</option>
-                    </select>
-                    <input ng-model="newName" ng-show="newEditorEltEnabled"  placeholder="Element Name"/> </br>
-                    <input ng-model="newDetail" ng-show="newEditorEltEnabled"  placeholder="Element Detail" /> </br>
+                   <div>
+                       <select name="cId" ng-model="cId">
+                           <option ng-repeat="option in allCompetences" ng-value="option.id"  placeholder="Competence Name">{{option.name}}</option>
+                       </select></br>
+                    </select></br>
+                       <input ng-model="newEltName" ng-show="newEditorEltEnabled"  placeholder="Element Name"/> </br>
+                       <input ng-model="newEltDetail" ng-show="newEditorEltEnabled"  placeholder="Element Detail" /> </br>
+                   </div>
 
 
                 </div>

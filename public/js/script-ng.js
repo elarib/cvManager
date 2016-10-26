@@ -415,8 +415,7 @@ cvApp.controller('competenceController', function($scope, $rootScope,
 			function successCallback(response) {
 				$scope.allCompetences = response.data;
 				console.log(response);
-
-
+				$scope.cId = 1;
 			}, function errorCallback(response, status) {
 				console.log(response);
 			});
